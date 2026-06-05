@@ -33,7 +33,7 @@ class Application extends Binding.Bindable
 	
 	public var assetManager(default, null) : AssetManager;
 	
-	private var _appXml : haxe.xml.Fast;
+	private var _appXml : haxe.xml.Access;
 
 	private function new() {
 		super();
@@ -56,7 +56,7 @@ class Application extends Binding.Bindable
 		// TODO: pass thru constructor?
 		var applicationData = haxe.Resource.getString("applicationData");
 		if(applicationData != null) {
-			_appXml = new haxe.xml.Fast( Xml.parse(applicationData).firstElement() );
+			_appXml = new haxe.xml.Access( Xml.parse(applicationData).firstElement() );
 		}
 
 		registerAssets();
@@ -95,7 +95,7 @@ class Application extends Binding.Bindable
 		init();
 	}
 	
-	private function readUIList(data : haxe.xml.Fast) : Array<Component> {
+	private function readUIList(data : haxe.xml.Access) : Array<Component> {
 		var comps : Array<Component> = [];
 		for(uiData in data.elements) {
 			var component = readComponent(uiData);
@@ -104,7 +104,7 @@ class Application extends Binding.Bindable
 		return comps;
 	}
 	
-	private function readStateContainer(data : haxe.xml.Fast) : Component {
+	private function readStateContainer(data : haxe.xml.Access) : Component {
 		var container = new StateContainer();
 		
 		for(uiData in data.elements) {
@@ -122,7 +122,7 @@ class Application extends Binding.Bindable
 		return container;
 	}
 	
-	private function readComponent(uiData : haxe.xml.Fast) : Component {
+	private function readComponent(uiData : haxe.xml.Access) : Component {
 		if(uiData == null) return null;
 		var comp : Component;
 		
@@ -272,7 +272,7 @@ class Application extends Binding.Bindable
 				var comps = readUIList(uiData);
 				for (comp in comps) {
 					numericStepper.add(comp);
-					if(Std.is(comp,TextBox)) numericStepper._textBox = cast(comp);
+					if(Std.isOfType(comp,TextBox)) numericStepper._textBox = cast(comp);
 				}
 				if(uiData.hasNode.incButton) numericStepper.incButton = cast(readComponent(uiData.node.incButton.elements.next()));
 				if(uiData.hasNode.decButton) numericStepper.decButton = cast(readComponent(uiData.node.decButton.elements.next()));

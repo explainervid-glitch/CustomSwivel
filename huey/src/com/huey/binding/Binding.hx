@@ -119,7 +119,7 @@ class Binding {
 					args:	[{name: "v", value: null, type: t, opt: false}]
 				});
 				_cl.addField(setterField);
-				field.kind = FProp("default", setterField.name, t, e);
+				field.kind = FProp("default", "set", t, e);
 
 			case FProp(get, set, t, e):
 				if(set == "default") {
@@ -132,7 +132,7 @@ class Binding {
 						args:	[{name: "v", value: null, type: t, opt: false}]
 					});
 					_cl.addField(setterField);
-					field.kind = FProp(get, setterField.name, t, e);
+					field.kind = FProp(get, "set", t, e);
 				} else {
 					function injectNotify(e : ExprDef) : ExprDef {
 						var retExpr : Expr;
@@ -148,16 +148,11 @@ class Binding {
 					}
 
 					var setter = _cl.getField('set_${field.name}'); // MIKNEW
-					if (setter == null){
-						trace("No setter for field: " + field.name); // trace just in case this causes an issue later, but its prob fine to return - bk20x;
-						return;
-					}
 					switch(setter.kind) {
-					    case FFun(f):
-						    com.huey.macros.MacroTools.mapExpr(f.expr, injectNotify);
+						case FFun(f):
+							com.huey.macros.MacroTools.mapExpr(f.expr, injectNotify);
 						default: Context.error("Unexpected error", pos);
 					}
-					
 				}
 
 			default:

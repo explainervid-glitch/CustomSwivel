@@ -57,9 +57,9 @@ import haxe.io.BytesInput;
 import haxe.io.Input;
 
 @:xml("SwivelHuey.xml") @:version("1.11")
-class Swivel extends Application 
+class Swivel extends Application
 {
-	@bindable private var _controller(get, set) : SwivelController;
+	@bindable private var _controller : SwivelController;
 	private var _browseFile : File;
 	
 	private var _fileListBox : ListBox;
@@ -91,10 +91,11 @@ class Swivel extends Application
 	public var frameStepperImage : Image;
 	public var startFrameStepper : NumericStepper;
 	public var endFrameStepper : NumericStepper;
+	
 	private var _previewGenerator : PreviewGenerator;
-
+	
 	public var setupGroup : RadioGroup;
-	@bindable public var durationGroup (get, set): RadioGroup;
+	@bindable public var durationGroup : RadioGroup;
 	
 	public var scaleModeGroup : RadioGroup;
 	public var cropButton : RadioButton;
@@ -104,10 +105,11 @@ class Swivel extends Application
 	public var codecSelectBox : SelectBox;
 	public var videoBitrateSlider : Slider;
 	
-	@bindable public var audioGroup (get, set): RadioGroup;
+	@bindable public var audioGroup : RadioGroup;
 	
 	public var frameRangeButton : RadioButton;
 	public var manualButton : RadioButton;
+	
 	public var noAudioButton : RadioButton;
 	public var swfAudioButton : RadioButton;
 	public var externalAudioButton : RadioButton;
@@ -126,10 +128,10 @@ class Swivel extends Application
 	public var watermarkAlphaSlider : Slider;
 	public var watermarkSizeSlider : Slider;
 	public var watermarkSettingsContainer : Component;
-
-	@bindable private var bitmapSmoothingCheckBox (get, set): CheckBox;
+	@bindable private var bitmapSmoothingCheckBox : CheckBox;
 	
 	private var progressText : Label;
+	
 	private var timeText : Label;
 	private var videoNameText : Label;
 	private var videoNameButton : Button;

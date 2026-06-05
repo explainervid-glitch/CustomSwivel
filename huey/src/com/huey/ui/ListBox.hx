@@ -40,7 +40,7 @@ class ListBox extends Container {
 	
 	public var onChange(default, null) : Dispatcher<UIEvent>;
 	
-	@bindable public var selectedIndex(get, set) : Int = -1;
+	@bindable public var selectedIndex(default, set) : Int = -1;
 	private function set_selectedIndex(v : Int) : Int {
 		_selectedRect.visible = false;
 		
@@ -120,7 +120,6 @@ class ListBox extends Container {
 		if(_scrollButton.y > 55) { _scrollButton.y = 55; updateScrollRect(); }
 	}
 	
-
 	public function addItem(item : Dynamic, ?label : String) : Void {
 		var comp = new Container();
 		var labelComp = new Label();
@@ -137,12 +136,8 @@ class ListBox extends Container {
 		comp.add(labelComp);
 		untyped comp._implComponent.buttonMode = true;
 		untyped comp._implComponent.mouseChildren = false;
-		var idx = _items.length;
-		comp.onClick.add(
-			function(e){
-				selectedIndex = idx;
-			}
-		);
+		var makeItemClickFn = function(i) {return function(e) selectedIndex = i;}
+		comp.onClick.add( makeItemClickFn(_items.length) );
 		var str = Std.string(_items.length + 1);
 		if(str.length < 2) str = "0" + str;
 		labelComp = new Label(str);
