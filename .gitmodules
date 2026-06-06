@@ -1,3 +1,4 @@
 [submodule "lib/format"]
 	path = lib/format
 	url = https://github.com/Herschel/format
+    branch = swf-button
