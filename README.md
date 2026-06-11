@@ -1,6 +1,4 @@
-# ![Swivel](https://www.newgrounds.com/imgs/swivel/logo.png)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Herschel/Swivel)](https://ci.appveyor.com/project/Herschel/swivel)
-[![Travis Build Status](https://travis-ci.org/Herschel/Swivel.svg?branch=master)](https://travis-ci.org/Herschel/Swivel)
+# ![Swivel](https://3.ntv.ru/public/files/82266708/swivel_logo.png)
 
 Converts Adobe Flash SWF files to video.
 
