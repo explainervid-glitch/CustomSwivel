@@ -23,7 +23,7 @@ See [LICENSE.md](LICENSE.md) for the full license.
 Swivel runs using the [Harman AIR](https://airsdk.harman.com/) runtime. AIR is 
 owned by Adobe Systems, Inc.
 
-Swivel uses software from the [FFmpeg](https://ffmpeg.org/)) project along 
+Swivel uses software from the [FFmpeg](https://ffmpeg.org/) project along 
 with supporting libraries, licensed under their corresponding licenses. These 
 libraries include:
 
