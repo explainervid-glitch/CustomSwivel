@@ -70,6 +70,32 @@ function sw_grabStill() {
     return _ok(FLfile.uriToPlatformPath(uri));
 }
 
+/**
+ * Exports the current frame to a scratch PNG in the Animate config folder, for
+ * the panel to put on the clipboard. Unlike sw_grabStill this needs no saved
+ * .fla, since it never writes beside the document.
+ */
+function sw_grabStillTemp() {
+    var doc = fl.getDocumentDOM();
+    if (!doc) return _err("No document is open in Animate.");
+
+    var uri = fl.configURI + "swivel_clipboard.png";
+
+    try {
+        FLfile.remove(uri);
+    } catch (e) {}
+
+    try {
+        doc.exportPNG(uri, true, true);
+    } catch (e) {
+        return _err("PNG export failed: " + e);
+    }
+
+    if (!FLfile.exists(uri)) return _err("Animate did not write the PNG.");
+
+    return _ok(FLfile.uriToPlatformPath(uri));
+}
+
 /** Name of the frontmost document, for the panel header. */
 function sw_getDocumentName() {
     var doc = fl.getDocumentDOM();

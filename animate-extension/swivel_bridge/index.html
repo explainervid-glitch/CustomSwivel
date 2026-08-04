@@ -33,7 +33,23 @@
 
         <div id="actions">
             <button id="send" class="secondary" title="Add SWF to Swivel input">Add to Swivel input</button>
-            <button id="grab" class="secondary" title="Export the current frame as a PNG at stage size">Grab Still</button>
+
+            <button id="grab" class="secondary icon" title="Save current frame as PNG (stage size)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                    <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                    <rect width="10" height="8" x="7" y="8" rx="1"/>
+                </svg>
+            </button>
+
+            <button id="copyClip" class="secondary icon" title="Copy current frame to clipboard (stage size)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="8" height="4" x="8" y="2" rx="1"/>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                </svg>
+            </button>
         </div>
         <div id="progressWrap" style="display:none">
             <div id="progressBar"><div id="progressFill"></div></div>

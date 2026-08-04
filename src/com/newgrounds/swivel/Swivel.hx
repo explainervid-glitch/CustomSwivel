@@ -135,6 +135,7 @@ class Swivel extends Application
 	public var watermarkSizeSlider : Slider;
 	public var watermarkSettingsContainer : Component;
 	@bindable private var bitmapSmoothingCheckBox : CheckBox;
+	public var queueCheckBox : CheckBox;
 	
 	private var progressText : Label;
 	
@@ -861,12 +862,93 @@ class Swivel extends Application
 		recordingButton.selected = false;
 		recordingButton.visible = false;
 		
-		_controller.onProgress.add(convertProgressHandler);
-		_controller.onComplete.add(convertCompleteHandler);
-		_controller.start();
-		
+		// Queue mode converts each SWF to its own video, one after another.
+		// Without it the controller chains every job into a single output.
+		if(queueCheckBox != null && queueCheckBox.selected && _controller.jobs.length > 1) {
+			beginQueue();
+		} else {
+			_controller.onProgress.add(convertProgressHandler);
+			_controller.onComplete.add(convertCompleteHandler);
+			_controller.start();
+		}
+
 		cancelButton.visible = false;
 		haxe.Timer.delay( function() cancelButton.visible = true, 2000);
+	}
+
+	// ------------------------------------------------------------------
+	// Queue mode
+	//
+	// The controller only knows how to make one video per run, so the queue
+	// is driven from here: the job list is swapped down to a single entry,
+	// converted, then swapped for the next one.
+	// ------------------------------------------------------------------
+
+	private var _queue : Array<SwivelJob>;
+	private var _queueIndex : Int = 0;
+	private var _queueOutputTemplate : File;
+
+	private function beginQueue() : Void {
+		_queue = _controller.jobs.array.copy();
+		_queueIndex = 0;
+		_queueOutputTemplate = _controller.outputFile;
+
+		startQueuedJob();
+	}
+
+	private function startQueuedJob() : Void {
+		if(_queue == null || _queueIndex >= _queue.length) return;
+
+		var job = _queue[_queueIndex];
+
+		_controller.jobs.splice(0, _controller.jobs.length);
+		_controller.jobs.push(job);
+		_controller.outputFile = queueOutputFor(job);
+
+		_controller.onProgress.add(convertProgressHandler);
+		_controller.onComplete.add(queueJobCompleteHandler);
+		_controller.start();
+	}
+
+	/** Names each output after its source SWF, keeping the chosen folder and extension. */
+	private function queueOutputFor(job : SwivelJob) : File {
+		var extension = "mp4";
+		var templateName = _queueOutputTemplate.name;
+		var dot = templateName.lastIndexOf(".");
+		if(dot > 0) extension = templateName.substr(dot + 1);
+
+		return _queueOutputTemplate.parent.resolvePath(stripExtension(job.file.name) + "." + extension);
+	}
+
+	private function queueJobCompleteHandler(e) : Void {
+		_controller.onProgress.removeAll();
+		_controller.onComplete.removeAll();
+
+		// Cancelled mid-queue.
+		if(_queue == null) return;
+
+		_queueIndex++;
+
+		if(_queueIndex < _queue.length) {
+			// Let the controller settle before starting the next conversion.
+			haxe.Timer.delay(startQueuedJob, 500);
+			return;
+		}
+
+		endQueue();
+		convertCompleteHandler(e);
+	}
+
+	/** Puts the full job list and the chosen output filename back. */
+	private function endQueue() : Void {
+		if(_queue == null) return;
+
+		_controller.jobs.splice(0, _controller.jobs.length);
+		for(job in _queue) _controller.jobs.push(job);
+		_controller.outputFile = _queueOutputTemplate;
+
+		_queue = null;
+		_queueIndex = 0;
 	}
 		
 	// VIDEO tab
@@ -1164,8 +1246,12 @@ class Swivel extends Application
 			recordingButton.visible = false;
 		} else {
 			_controller.stop();
+
+			// Stop the queue advancing, and put the full job list back.
+			endQueue();
+
 			mainContainer.state = "setup";
-			
+
 			convertButton.visible = false;
 			haxe.Timer.delay( function() convertButton.visible = true, 2000);
 			

@@ -30,6 +30,7 @@
     var docEl = document.getElementById("doc");
     var sendBtn = document.getElementById("send");
     var grabBtn = document.getElementById("grab");
+    var copyBtn = document.getElementById("copyClip");
     var launchBtn = document.getElementById("launch");
     var convertBtn = document.getElementById("convert");
     var progressWrap = document.getElementById("progressWrap");
@@ -85,6 +86,7 @@
     function refreshButtons() {
         sendBtn.disabled = busy || !connected;
         grabBtn.disabled = busy;
+        copyBtn.disabled = busy;
         convertBtn.disabled = busy;
         launchBtn.disabled = busy || launching;
     }
@@ -288,6 +290,118 @@
 
     sendBtn.addEventListener("click", function () {
         sendUsing("sw_getSwfPath()", "Locating published SWF…");
+    });
+
+    /* Reads a PNG off disk and puts it on the Windows clipboard as an image.
+       Tries the browser clipboard first; older CEP hosts lack ClipboardItem,
+       so PowerShell is the fallback. */
+    function copyPngToClipboard(path) {
+        return new Promise(function (resolve, reject) {
+            if (navigator.clipboard && typeof window.ClipboardItem === "function") {
+                var base64 = null;
+                try {
+                    var read = window.cep.fs.readFile(path, window.cep.encoding.Base64);
+                    if (read && read.err === 0) base64 = read.data;
+                } catch (e) {}
+
+                if (base64) {
+                    try {
+                        var binary = atob(base64);
+                        var bytes = new Uint8Array(binary.length);
+                        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+                        var item = new window.ClipboardItem({
+                            "image/png": new Blob([bytes], { type: "image/png" })
+                        });
+
+                        navigator.clipboard.write([item])
+                            .then(function () { resolve(); })
+                            .catch(function () { copyViaPowerShell(path).then(resolve, reject); });
+                        return;
+                    } catch (e) {}
+                }
+            }
+
+            copyViaPowerShell(path).then(resolve, reject);
+        });
+    }
+
+    /* createProcess does not search PATH, so powershell needs a full path. */
+    function powerShellPath() {
+        var candidates = [
+            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
+        ];
+        for (var i = 0; i < candidates.length; i++) {
+            if (fileExists(candidates[i])) return candidates[i];
+        }
+        return null;
+    }
+
+    /* -STA is required -- the Windows clipboard is single-threaded apartment.
+       The script goes to a file rather than -Command, so none of the quoting
+       has to survive being passed through as an argument. */
+    function copyViaPowerShell(pngPath) {
+        return new Promise(function (resolve, reject) {
+            var exe = powerShellPath();
+            if (!exe) {
+                reject(new Error("PowerShell not found, so the clipboard is unreachable."));
+                return;
+            }
+
+            var separator = pngPath.lastIndexOf("\\");
+            if (separator < 0) separator = pngPath.lastIndexOf("/");
+            var scriptPath = pngPath.substring(0, separator + 1) + "swivel_clipboard.ps1";
+
+            var script =
+                "Add-Type -AssemblyName System.Windows.Forms,System.Drawing\r\n" +
+                "$img = [System.Drawing.Image]::FromFile('" + pngPath.replace(/'/g, "''") + "')\r\n" +
+                "[System.Windows.Forms.Clipboard]::SetImage($img)\r\n" +
+                "$img.Dispose()\r\n";
+
+            try {
+                var written = window.cep.fs.writeFile(scriptPath, script);
+                if (written && written.err !== 0) {
+                    reject(new Error("Could not write the clipboard helper (" + written.err + ")."));
+                    return;
+                }
+            } catch (e) {
+                reject(new Error("Could not write the clipboard helper."));
+                return;
+            }
+
+            try {
+                var r = window.cep.process.createProcess(
+                    exe, "-NoProfile", "-STA", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden",
+                    "-File", scriptPath);
+
+                if (r && r.err !== 0) {
+                    reject(new Error("PowerShell would not start (" + r.err + ")."));
+                    return;
+                }
+                resolve();
+            } catch (e) {
+                reject(new Error("PowerShell would not start: " + e));
+            }
+        });
+    }
+
+    copyBtn.addEventListener("click", function () {
+        setBusy(true);
+        setState("Copying frame…", "busy");
+
+        runHost("sw_grabStillTemp()")
+            .then(function (path) {
+                return copyPngToClipboard(path);
+            })
+            .then(function () {
+                setBusy(false);
+                setState("Frame copied to clipboard", "ok");
+            })
+            .catch(function (err) {
+                setBusy(false);
+                setState(err.message, "err");
+            });
     });
 
     /* Purely an Animate operation -- no Swivel involved. */

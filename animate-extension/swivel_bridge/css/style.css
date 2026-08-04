@@ -80,6 +80,21 @@ html, body {
     border-color: #5a5a5a;
 }
 
+/* Icon-only buttons size to their glyph rather than stretching. */
+#actions button.icon {
+    width: auto;
+    flex: none;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+#actions button.icon svg {
+    display: block;
+}
+
 #actions button:disabled {
     background: transparent;
     border-color: #3a3a3a;

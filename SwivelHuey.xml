@@ -181,8 +181,19 @@
 						<rectangle x="98" y="364" width="734" height="45" color="0xa6ffffff"/>
 						<rectangle x="98" y="409" width="734" height="45" color="0x40ffffff"/>
 						
-						<label text="Input SWFs" x="115" y="226" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="243" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Input SWFs" x="115" y="216" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="233" font="AdvoCut" size="10" color="0x425137"/>
+
+						<label text="Queue System" x="140" y="255" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+
+						<checkBox x="115" y="255" name="queueCheckBox">
+							<upState><image source="btnRadioUp"/></upState>
+							<overState><image source="btnRadioOver"/></overState>
+							<downState><image source="btnRadioDown"/></downState>
+							<selectedUpState><image source="btnRadioSelected"/></selectedUpState>
+							<selectedOverState><image source="btnRadioOver"/></selectedOverState>
+							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
+						</checkBox>
 
 						<image x="438" y="204" source="listBoxBigBG"/>
 						<listBox x="438" y="204" name="_fileListBox"/>
