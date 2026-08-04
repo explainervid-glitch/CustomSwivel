@@ -157,12 +157,19 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 	}
 	
 	private function runNextTask() {
+		// The encoder pauses the whole runtime when its frame queue fills, and
+		// onFrameCaptured can call straight through to here on the final frame
+		// -- while still paused. Everything below waits on ENTER_FRAME, which
+		// never fires while the runtime is paused, so the conversion would
+		// stall for good at the last frame. Lift the pause first.
+		flash.system.System.resume();
+
 		currentTask = _taskList.pop();
 		if(currentTask == null) {
 			finish();
 			return;
 		}
-		
+
 		flash.ui.Mouse.show();
 		
 		_frame = null;

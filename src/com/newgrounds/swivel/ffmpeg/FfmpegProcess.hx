@@ -166,12 +166,18 @@ class FfmpegEncoder extends FfmpegProcess
 
 	private var _frameQueue : Array<ByteArray>;
 	inline private static var FRAME_QUEUE_SIZE : Int = 2;
+
+	/** How long to wait for outstanding frame acknowledgements before giving up. */
+	inline private static var CLOSE_TIMEOUT_MS : Int = 5000;
+	private var _closeTimer : haxe.Timer;
+	private var _inputClosed : Bool;
 	
 	public var onFrameReceived(default, null) : Dispatcher<Dynamic>;
 	
 	public function new(preset : VideoPreset, videoBitRate : Null<Int>, outputFile : File, width : UInt, height : UInt, frameRate : Float, ?audioFile : String, ?audioCodec : AudioCodec, ?audioBitRate : Null<Int>, ?numChannels : Int) {
 		_framesSent = _framesReceived = _framesEncoded = 0;
 		_frameQueue = new Array();
+		_inputClosed = false;
 			
 		onFrameReceived = new Dispatcher();
 		var params = [
@@ -254,9 +260,18 @@ class FfmpegEncoder extends FfmpegProcess
 	
 	public override function send(frame : ByteArray) {
 		//if(_closed) return;
-		
+
 		_frameQueue.push(frame);
 		_framesSent++;
+
+		// Diagnostic: if the queue depth climbs instead of hovering around
+		// FRAME_QUEUE_SIZE, ffmpeg is not acknowledging frames and memory is
+		// growing unbounded -- a different failure from a pause deadlock.
+		if(_framesSent % 100 == 0) {
+			Logger.log("FfmpegLog", 'SWIVEL sent=$_framesSent received=$_framesReceived '
+				+ 'encoded=$_framesEncoded queue=${_frameQueue.length} '
+				+ 'bytes=${frame.length}\n');
+		}
 
 		if(_frameQueue.length == 1) sendNextFrame();
 		if(_frameQueue.length >= FRAME_QUEUE_SIZE) flash.system.System.pause();
@@ -272,9 +287,38 @@ class FfmpegEncoder extends FfmpegProcess
 	
 	public override function close(?force : Bool = false) : Void {
 		_closed = true;
-		if (_framesReceived >= _framesSent)
-			_ffmpeg.closeInput();
+
+		// send() pauses the whole runtime once the frame queue fills, and the
+		// only things that resume it are sendNextFrame() and ffmpeg exiting.
+		// Nothing -- including the stdin acknowledgements this method waits on
+		// -- can be processed while paused, so always lift it here.
+		flash.system.System.resume();
+
+		if (_framesReceived >= _framesSent) {
+			closeInputOnce();
+		} else {
+			// ffmpeg only exits once its stdin reaches EOF. If an
+			// acknowledgement never arrives we would wait forever, so close
+			// input anyway after a grace period. Frames already written are
+			// not lost -- ffmpeg flushes what it has buffered.
+			_closeTimer = haxe.Timer.delay(closeInputOnce, CLOSE_TIMEOUT_MS);
+		}
+
 		if(force) _ffmpeg.exit(true);
+	}
+
+	/** Closes ffmpeg's stdin exactly once, from whichever path gets there first. */
+	private function closeInputOnce() : Void {
+		if(_closeTimer != null) {
+			_closeTimer.stop();
+			_closeTimer = null;
+		}
+		if(_inputClosed) return;
+		_inputClosed = true;
+
+		try _ffmpeg.closeInput() catch(error : Dynamic) {
+			Logger.log("FfmpegLog", 'closeInput failed: ${Std.string(error)}\n');
+		}
 	}
 		
 	private override function onStderr(_) : Void {
@@ -293,14 +337,14 @@ class FfmpegEncoder extends FfmpegProcess
 		
 		_framesReceived++;
 		//trace("Ercvd: " + _framesReceived);
-		if (_closed && _framesReceived >= _framesSent) _ffmpeg.closeInput();
+		if (_closed && _framesReceived >= _framesSent) closeInputOnce();
 		if(!_isWindows) { _frameQueue.shift(); sendNextFrame(); }
 	}
 	
 	private override function onStdinProgress(_) : Void {
 		_framesReceived++;
 		//trace("Prcvd: " + _framesReceived);
-		if (_closed && _framesReceived >= _framesSent) _ffmpeg.closeInput();
+		if (_closed && _framesReceived >= _framesSent) closeInputOnce();
 		if(!_isWindows) { _frameQueue.shift(); sendNextFrame(); }
 	}
 	

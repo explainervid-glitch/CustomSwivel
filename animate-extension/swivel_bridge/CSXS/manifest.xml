@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="5.0" ExtensionBundleId="com.swivel.animatebridge" ExtensionBundleVersion="1.0.0"
+    ExtensionBundleName="Send to Swivel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ExtensionList>
+        <Extension Id="com.swivel.animatebridge.panel" Version="1.0.0" />
+    </ExtensionList>
+    <ExecutionEnvironment>
+        <HostList>
+            <!-- FLPR = Adobe Animate.
+                 [19.0,99.9] covers Animate CC 2019 (19.x, CEP 9) through 2024+. -->
+            <Host Name="FLPR" Version="[19.0,99.9]" />
+        </HostList>
+        <LocaleList>
+            <Locale Code="All" />
+        </LocaleList>
+        <RequiredRuntimeList>
+            <RequiredRuntime Name="CSXS" Version="9.0" />
+        </RequiredRuntimeList>
+    </ExecutionEnvironment>
+    <DispatchInfoList>
+        <Extension Id="com.swivel.animatebridge.panel">
+            <DispatchInfo>
+                <Resources>
+                    <MainPath>./index.html</MainPath>
+                    <ScriptPath>./jsx/host.jsx</ScriptPath>
+                    <!-- No CEFCommandLine node flag on purpose: the Animate CEP
+                         host has fetch() but no Node, so the panel talks to
+                         Swivel over HTTP rather than a TCP socket. -->
+                </Resources>
+                <Lifecycle>
+                    <AutoVisible>true</AutoVisible>
+                </Lifecycle>
+                <UI>
+                    <Type>Panel</Type>
+                    <Menu>Send to Swivel</Menu>
+                    <Geometry>
+                        <Size>
+                            <Height>150</Height>
+                            <Width>260</Width>
+                        </Size>
+                        <MinSize>
+                            <!-- Low, so resizeContent can shrink the panel to
+                                 whatever its content actually needs. -->
+                            <Height>80</Height>
+                            <Width>200</Width>
+                        </MinSize>
+                        <MaxSize>
+                            <Height>600</Height>
+                            <Width>800</Width>
+                        </MaxSize>
+                    </Geometry>
+                </UI>
+            </DispatchInfo>
+        </Extension>
+    </DispatchInfoList>
+</ExtensionManifest>

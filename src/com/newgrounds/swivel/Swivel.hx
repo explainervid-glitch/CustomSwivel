@@ -38,7 +38,12 @@ import com.newgrounds.swivel.swf.SwivelSwf;
 import com.newgrounds.swivel.swf.RenderQuality;
 import com.newgrounds.swivel.swf.SWFRecorder.ScaleMode;
 import com.newgrounds.swivel.swf.Watermark.WatermarkAlign;
+import com.huey.utils.Logger;
+import flash.desktop.ClipboardFormats;
 import flash.desktop.NativeApplication;
+import flash.desktop.NativeDragManager;
+import flash.events.FileListEvent;
+import flash.events.NativeDragEvent;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.events.Event;
@@ -56,7 +61,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.Input;
 
-@:xml("SwivelHuey.xml") @:version("1.11")
+@:xml("SwivelHuey.xml") @:version("2.0")
 class Swivel extends Application
 {
 	@bindable private var _controller : SwivelController;
@@ -86,6 +91,7 @@ class Swivel extends Application
 	public var heightStepper : NumericStepper;
 	
 	private var _aspectRatio : Null<Float>	= 16.0 / 9.0;
+	private var _toast : Toast;
 	public var lockAspectCheckBox : CheckBox;
 	
 	public var frameStepperImage : Image;
@@ -278,11 +284,19 @@ class Swivel extends Application
 
 	private override function init() : Void {
 		#if !debug
-			if(!_isCmdLine) ui.add(new SplashScreen());
+			if(!_isCmdLine) showSplashScreen();
 		#end
 
 		_previewGenerator = new PreviewGenerator();
 		_previewGenerator.onPreviewReady.add(previewReadyHandler);
+
+		_toast = new Toast();
+		_toast.x = 115;
+		_toast.y = 530;
+		ui.add(_toast);
+
+		initDragAndDrop();
+		initAnimateBridge();
 				
 		// SOURCE
 		Binding.bind( removeButton.enabled, _controller.jobs.length > 0 );
@@ -400,13 +414,17 @@ class Swivel extends Application
 	}
 	
 	private function helpClickHandler(_) flash.Lib.getURL(new flash.net.URLRequest("http://www.newgrounds.com/swivel"));
-	private function ngUpsellClickHandler(_) flash.Lib.getURL(new flash.net.URLRequest("http://www.newgrounds.com/projects/movies/submit"));
+	private function ngUpsellClickHandler(_) flash.Lib.getURL(new flash.net.URLRequest("https://zeusanimation.com/"));
 	
 	private function addClickHandler(e) : Void {
-		// TODO: create File class
-		_browseFile = new File();
-		_browseFile.addEventListener(flash.events.Event.SELECT, fileSelectHandler);
-		_browseFile.browseForOpen("Import SWF", [new FileFilter("SWF Files (*.swf)", "*.swf")]);
+		_browseFile = lastBrowseDirectory();
+		_browseFile.addEventListener(FileListEvent.SELECT_MULTIPLE, browseSelectHandler);
+		_browseFile.browseForOpenMultiple("Import SWFs", [new FileFilter("SWF Files (*.swf)", "*.swf")]);
+	}
+
+	private function browseSelectHandler(e : FileListEvent) : Void {
+		_browseFile.removeEventListener(FileListEvent.SELECT_MULTIPLE, browseSelectHandler);
+		addSwfFiles(e.files);
 	}
 
 	private function removeClickHandler(e) : Void {
@@ -414,41 +432,364 @@ class Swivel extends Application
 	}
 
 	private function spinBusyIcon() untyped busySpinner._implComponent.rotation -= 40;
-	private function fileSelectHandler(e) {
+
+	// ------------------------------------------------------------------
+	// Importing SWFs
+	//
+	// Files are loaded one at a time so a single bad SWF cannot abort the
+	// rest of the batch. Anything that fails is collected and reported at
+	// the end rather than being swallowed.
+	// ------------------------------------------------------------------
+
+	private var _pendingFiles : Array<File>;
+	private var _failedFiles : Array<String>;
+	private var _addedFileCount : Int;
+	private var _spinTimer : haxe.Timer;
+
+	private function addSwfFiles(files : Array<File>) : Void {
+		if(files == null || files.length == 0) return;
+
+		var queue = new Array<File>();
+		for(file in files) {
+			if(file != null && file.exists && !file.isDirectory) queue.push(file);
+		}
+		if(queue.length == 0) return;
+
+		rememberBrowseDirectory(queue[0]);
+
+		_pendingFiles = queue;
+		_failedFiles = new Array();
+		_addedFileCount = 0;
+
+		startBusy();
+		loadNextFile();
+	}
+
+	private function loadNextFile() : Void {
+		if(_pendingFiles.length == 0) {
+			finishAddingFiles();
+			return;
+		}
+
+		var file = _pendingFiles.shift();
+
+		var onComplete = null;
+		var onError = null;
+
+		var detach = function() {
+			file.removeEventListener(Event.COMPLETE, onComplete);
+			file.removeEventListener(flash.events.IOErrorEvent.IO_ERROR, onError);
+		};
+
+		onComplete = function(_) {
+			detach();
+			try {
+				addJob(file, new SwivelSwf(Bytes.ofData(file.data)));
+				_addedFileCount++;
+			} catch(error : Dynamic) {
+				Logger.log("SwivelLog", 'Failed to parse ${file.nativePath}: ${Std.string(error)}\n');
+				_failedFiles.push(file.name);
+			}
+			loadNextFile();
+		};
+
+		onError = function(_) {
+			detach();
+			Logger.log("SwivelLog", 'Failed to read ${file.nativePath}\n');
+			_failedFiles.push(file.name);
+			loadNextFile();
+		};
+
+		file.addEventListener(Event.COMPLETE, onComplete);
+		file.addEventListener(flash.events.IOErrorEvent.IO_ERROR, onError);
+
+		try file.load()
+		catch(error : Dynamic) {
+			detach();
+			_failedFiles.push(file.name);
+			loadNextFile();
+		}
+	}
+
+	private function addJob(file : File, swf : SwivelSwf) : Void {
+		_controller.jobs.push( new SwivelJob(file, swf) );
+
+		// The first SWF added seeds the output filename and dimensions.
+		if(_controller.jobs.length == 1) {
+			_controller.outputFile = file.parent.resolvePath( stripExtension(file.name) + ".mp4" );
+
+			_fileListBox.selectedIndex = 0;
+
+			var swfAspectRatio = swf.width / swf.height;
+			if(_aspectRatio != null) _aspectRatio = swfAspectRatio;
+
+			var w : Float = 1920.0;
+			var h : Float = 1080.0;
+			if(swfAspectRatio > w/h)
+				h = swf.height * (w/swf.width);
+			else
+				w = swf.width * (h/swf.height);
+
+			updateOutputSize(Std.int(w), Std.int(h));
+		}
+	}
+
+	private function finishAddingFiles() : Void {
+		stopBusy();
+
+		if(_failedFiles.length > 0) {
+			var names = _failedFiles.join(", ");
+			var message = if(_addedFileCount > 0)
+				'Added $_addedFileCount SWF${_addedFileCount == 1 ? "" : "s"}. Could not read ${_failedFiles.length} of them: $names';
+			else if(_failedFiles.length == 1)
+				'Could not read $names. It may be corrupt, or not an SWF.';
+			else
+				'Could not read any of these: $names';
+
+			_toast.showError(message);
+		}
+
+		_pendingFiles = null;
+		_failedFiles = null;
+
+		startDeferredConvert();
+	}
+
+	private function startBusy() : Void {
 		busySpinner.visible = true;
 		flash.Lib.current.mouseChildren = flash.Lib.current.tabEnabled = false;
-		var spinTimer = new haxe.Timer(33);
-		spinTimer.run = spinBusyIcon;
-		
-		_browseFile.addEventListener(flash.events.Event.COMPLETE, function(e) {
-			try {
-				var swf = new SwivelSwf(Bytes.ofData(_browseFile.data));
-				var job = new SwivelJob( _browseFile, swf );
-				_controller.jobs.push(job);
-				if(_controller.jobs.length == 1) {
-					_controller.outputFile = _browseFile.parent.resolvePath( _browseFile.name.split(".")[0] + ".mp4" );
-					
-					_fileListBox.selectedIndex = 0;
-					
-					var swfAspectRatio = swf.width / swf.height;
-					if(_aspectRatio != null) _aspectRatio = swfAspectRatio;
-					
-					var w : Float = 1920.0;
-					var h : Float = 1080.0;
-					if(swfAspectRatio > w/h)
-						h = swf.height * (w/swf.width);
-					else
-						w = swf.width * (h/swf.height);
-						
-					updateOutputSize(Std.int(w), Std.int(h));
-				}
-			} catch(error : Dynamic) {}
-			busySpinner.visible = false;
-			flash.Lib.current.mouseChildren = flash.Lib.current.tabEnabled = true;
-			spinTimer.stop();
-			spinTimer = null;
+		_spinTimer = new haxe.Timer(33);
+		_spinTimer.run = spinBusyIcon;
+	}
+
+	private function stopBusy() : Void {
+		busySpinner.visible = false;
+		flash.Lib.current.mouseChildren = flash.Lib.current.tabEnabled = true;
+		if(_spinTimer != null) {
+			_spinTimer.stop();
+			_spinTimer = null;
+		}
+	}
+
+	/** Strips only the final extension, so "my.project.v2.swf" keeps "my.project.v2". */
+	private static function stripExtension(name : String) : String {
+		var dot = name.lastIndexOf(".");
+		return if(dot > 0) name.substr(0, dot) else name;
+	}
+
+	// ------------------------------------------------------------------
+	// Remembering the last folder browsed
+	// ------------------------------------------------------------------
+
+	inline private static var PREFS_NAME = "__swivel_prefs";
+
+	private function lastBrowseDirectory() : File {
+		try {
+			var path : String = flash.net.SharedObject.getLocal(PREFS_NAME).data.lastBrowseDirectory;
+			if(path != null) {
+				var directory = new File(path);
+				if(directory.exists && directory.isDirectory) return directory;
+			}
+		} catch(error : Dynamic) {}
+
+		return try File.documentsDirectory catch(error : Dynamic) new File();
+	}
+
+	private function rememberBrowseDirectory(file : File) : Void {
+		try {
+			var prefs = flash.net.SharedObject.getLocal(PREFS_NAME);
+			prefs.data.lastBrowseDirectory = file.parent.nativePath;
+			prefs.flush();
+		} catch(error : Dynamic) {}
+	}
+
+	// ------------------------------------------------------------------
+	// Drag and drop
+	// ------------------------------------------------------------------
+
+	private function initDragAndDrop() : Void {
+		// init() can run before the display object is on the stage, in which
+		// case there is nothing to listen on yet -- wait for it to arrive.
+		if(flash.Lib.current.stage == null) {
+			flash.Lib.current.addEventListener(Event.ADDED_TO_STAGE, function onAdded(_) {
+				flash.Lib.current.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
+				initDragAndDrop();
+			});
+			return;
+		}
+
+		var stage = flash.Lib.current.stage;
+		stage.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, dragEnterHandler);
+		stage.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, dragDropHandler);
+		Logger.log("SwivelLog", "Drag and drop enabled.\n");
+	}
+
+	private function dragEnterHandler(e : NativeDragEvent) : Void {
+		if(!acceptsDroppedFiles()) return;
+		if(e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT)) {
+			NativeDragManager.acceptDragDrop( flash.Lib.current.stage );
+		}
+	}
+
+	private function dragDropHandler(e : NativeDragEvent) : Void {
+		if(!acceptsDroppedFiles()) return;
+
+		var dropped : Array<Dynamic> = cast e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT);
+		if(dropped == null) return;
+
+		var swfs = new Array<File>();
+		var skipped = 0;
+		for(item in dropped) {
+			var file : File = cast item;
+			if(file.isDirectory || file.name.toLowerCase().substr(-4) != ".swf") { skipped++; continue; }
+			swfs.push(file);
+		}
+
+		if(swfs.length == 0) {
+			_toast.showError("Only .swf files can be dropped here.");
+			return;
+		}
+
+		if(skipped > 0) _toast.show('Ignored $skipped non-SWF item${skipped == 1 ? "" : "s"}.');
+
+		addSwfFiles(swfs);
+	}
+
+	/** Files may only be dropped while the source list is actually editable. */
+	private function acceptsDroppedFiles() : Bool {
+		return _pendingFiles == null && mainContainer.state != "converting";
+	}
+
+	// ------------------------------------------------------------------
+	// Intro splash
+	// ------------------------------------------------------------------
+
+	/** Longest the intro may cover the UI, however its animation behaves. */
+	inline private static var SPLASH_TIMEOUT_MS : Int = 6000;
+
+	private var _splashScreen : SplashScreen;
+
+	private function showSplashScreen() : Void {
+		_splashScreen = new SplashScreen();
+		ui.add(_splashScreen);
+
+		// SplashScreen removes itself only once its animation reaches the last
+		// frame. If that never happens it stays on top of the whole window and
+		// swallows every click, so guarantee it goes away regardless.
+		haxe.Timer.delay(hideSplashScreen, SPLASH_TIMEOUT_MS);
+	}
+
+	private function hideSplashScreen() : Void {
+		if(_splashScreen == null) return;
+		if(_splashScreen.parent != null) _splashScreen.parent.remove(_splashScreen);
+		_splashScreen = null;
+	}
+
+	// ------------------------------------------------------------------
+	// Adobe Animate bridge
+	//
+	// Listens on loopback so the "Send to Swivel" Animate extension can hand
+	// over the SWF it just published. See animate-extension/.
+	// ------------------------------------------------------------------
+
+	private var _animateBridge : AnimateBridge;
+
+	private function initAnimateBridge() : Void {
+		_animateBridge = new AnimateBridge();
+		_animateBridge.onAddFile = animateAddFileHandler;
+		_animateBridge.onConvert = animateConvertHandler;
+		_animateBridge.onProgress = animateProgressHandler;
+		_animateBridge.appVersion = VERSION;
+
+		if(!_animateBridge.start()) {
+			// Not fatal -- Swivel simply will not accept pushes from Animate.
+			// Usually means another instance already owns the port.
+			_animateBridge = null;
+			return;
+		}
+
+		NativeApplication.nativeApplication.addEventListener(Event.EXITING, function(_) {
+			if(_animateBridge != null) _animateBridge.stop();
 		});
-		_browseFile.load();
+	}
+
+	/** Returns null when accepted, otherwise the reason it was refused. */
+	private function animateAddFileHandler(path : String) : Null<String> {
+		if(!acceptsDroppedFiles()) return "Swivel is busy converting";
+
+		var file = try new File(path) catch(error : Dynamic) null;
+		if(file == null || !file.exists) return 'No such file: $path';
+		if(file.isDirectory) return 'Not a file: $path';
+		if(file.name.toLowerCase().substr(-4) != ".swf") return 'Not an SWF: ${file.name}';
+
+		addSwfFiles([file]);
+
+		orderToFront();
+		_toast.show('Received ${file.name} from Animate.');
+
+		return null;
+	}
+
+	/** Returns null when accepted, otherwise the reason it was refused. */
+	private var _convertWhenReady : Bool = false;
+
+	private function animateConvertHandler() : Null<String> {
+		if(mainContainer.state == "converting") return "Swivel is already converting";
+
+		// /add loads its file asynchronously, so a caller that adds and then
+		// immediately converts arrives while the import is still running.
+		// Wait for it rather than refusing.
+		if(_pendingFiles != null) {
+			_convertWhenReady = true;
+			return null;
+		}
+
+		if(_controller.jobs.length == 0) return "No SWFs added to convert";
+		if(_controller.outputFile == null) return "No output file set";
+
+		// Defer to the next frame so the HTTP response can flush first.
+		haxe.Timer.delay(function() convertClickHandler(null), 1);
+		return null;
+	}
+
+	/** Runs a conversion that was requested while files were still importing. */
+	private function startDeferredConvert() : Void {
+		if(!_convertWhenReady) return;
+		_convertWhenReady = false;
+
+		if(_controller.jobs.length == 0) {
+			_toast.showError("Nothing to convert -- the SWF could not be read.");
+			return;
+		}
+		if(_controller.outputFile == null) {
+			_toast.showError("Nothing to convert -- no output file is set.");
+			return;
+		}
+
+		haxe.Timer.delay(function() convertClickHandler(null), 1);
+	}
+
+	/** Returns the latest progress info, or null if not converting. */
+	private function animateProgressHandler() : Null<{ progress : Float, task : String, message : String, complete : Bool }> {
+		var converting = mainContainer.state == "converting";
+		var complete   = mainContainer.state == "complete";
+
+		if(!converting && !complete) return null;
+
+		var taskName = "";
+		var message  = "";
+		var progress = 0.0;
+
+		if(complete) {
+			progress = 1.0;
+			message  = "Conversion complete!";
+		} else if(_controller.currentTask != null) {
+			taskName = Std.string(_controller.currentTask);
+			message  = _lastProgressMessage;
+			progress = _lastProgressValue;
+		}
+
+		return { progress : progress, task : taskName, message : message, complete : complete };
 	}
 	
 	private function fileChangedHandler(_) {
@@ -609,9 +950,16 @@ class Swivel extends Application
 	private var _bitmap : flash.display.Bitmap;
 	
 	private var _recording : Bool;
+
+	/** Last progress value reported by the controller, for the Animate bridge. */
+	private var _lastProgressValue : Float = 0;
+	/** Last progress message reported by the controller, for the Animate bridge. */
+	private var _lastProgressMessage : String = "";
+
 	private function convertProgressHandler(progress : SwivelProgressEvent) {
 		// TODO
 		progressBar.value = progress.progress;
+		_lastProgressValue = progress.progress;
 		var text;
 		text = switch(progress.task) {
 			case StartEncoder(_, _):	"Starting video encoder...";
@@ -627,6 +975,7 @@ class Swivel extends Application
 			case DeleteTempFiles:		'Cleaning up temporary files...';
 		}
 		progressText.text = text;
+		_lastProgressMessage = text;
 		
 		if(progress.frame != null) {
 			untyped {
@@ -774,7 +1123,10 @@ class Swivel extends Application
 			fileSizeText.text = (Std.int(e.fileSize / (1024*1024) * 10)/ 10) + " MB";
 			videoNameText.text = e.outputFile.name;
 			
-			new CompleteSound().play();
+			// Prefer assets/audio/complete.mp3 so the sound can be swapped
+			// without recompiling; fall back to the sound compiled into
+			// assets/SwivelFonts.swf.
+			if(!Sfx.play("complete")) new CompleteSound().play();
 			orderToFront();
 		} else {
 			NativeApplication.nativeApplication.exit(0);
@@ -782,6 +1134,13 @@ class Swivel extends Application
 	}
 	
 	private function navClickHandler(e) : Void {
+		Logger.log("SwivelLog", "navClick fired. matches -> "
+			+ "source:" + Std.string(e.source == sourceButton)
+			+ " video:"  + Std.string(e.source == videoButton)
+			+ " audio:"  + Std.string(e.source == audioButton)
+			+ " overlay:" + Std.string(e.source == overlayButton)
+			+ "\n");
+
 		if(e.source==sourceButton) _settingsContainer.state = "source";
 		else if(e.source==videoButton) _settingsContainer.state = "video";
 		else if(e.source==audioButton) _settingsContainer.state = "audio";

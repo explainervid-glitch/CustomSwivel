@@ -11,14 +11,14 @@
 ;General
 
   ;Name and file
-  Name "Swivel"
-  OutFile "swivel-win32.exe"
+  Name "Swivel 2"
+  OutFile "swivel2-win32.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\Swivel"
+  InstallDir "$PROGRAMFILES\Swivel2"
 
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\Swivel" ""
+  InstallDirRegKey HKCU "Software\Swivel2" ""
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -31,7 +31,7 @@
   Var StartMenuFolder
 
 Function createDestkopIcon
-  CreateShortcut "$DESKTOP\Swivel.lnk" "$INSTDIR\Swivel.exe"
+  CreateShortcut "$DESKTOP\Swivel 2.lnk" "$INSTDIR\Swivel2.exe"
 FunctionEnd
 
 ;--------------------------------
@@ -49,11 +49,11 @@ FunctionEnd
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU"
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Swivel"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Swivel2"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
   !insertmacro MUI_PAGE_INSTFILES
-  !define MUI_FINISHPAGE_RUN "$INSTDIR\Swivel.exe"
+  !define MUI_FINISHPAGE_RUN "$INSTDIR\Swivel2.exe"
   !define MUI_FINISHPAGE_SHOWREADME ""
   !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
   !define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
@@ -73,14 +73,14 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Swivel" SecSwivel
+Section "Swivel 2" SecSwivel
 
   SetOutPath "$INSTDIR"
 
   File /r bin\Swivel\*
 
   ;Store installation folder
-  WriteRegStr HKCU "Software\Swivel" "" $INSTDIR
+  WriteRegStr HKCU "Software\Swivel2" "" $INSTDIR
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -89,37 +89,37 @@ Section "Swivel" SecSwivel
   SetShellVarContext all
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Swivel.lnk" "$INSTDIR\Swivel.exe"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Swivel 2.lnk" "$INSTDIR\Swivel2.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 				
   !insertmacro MUI_STARTMENU_WRITE_END
 
   ;Add/Remove Programs
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
-                 "DisplayName" "Swivel"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
+                 "DisplayName" "Swivel 2"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
-                 "DisplayIcon" "$\"$INSTDIR\Swivel.exe$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
+                 "DisplayIcon" "$\"$INSTDIR\Swivel2.exe$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "Publisher" "Newgrounds.com, Inc."
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "HelpLink" "http://www.newgrounds.com"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "DisplayVersion" "1.11"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "VersionMajor" "1"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "VersionMinor" "11"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "NoModify" "1"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "NoRepair" "1"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "EstimatedSize" "61440"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2" \
                  "Comments" "SWF to video convertor"
 SectionEnd
 
@@ -127,7 +127,7 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecSwivel ${LANG_ENGLISH} "Swivel"
+  LangString DESC_SecSwivel ${LANG_ENGLISH} "Swivel 2"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -148,10 +148,10 @@ Section "Uninstall"
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   SetShellVarContext all
   Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$StartMenuFolder\Swivel.lnk"
+  Delete "$SMPROGRAMS\$StartMenuFolder\Swivel 2.lnk"
   RMDir /r "$SMPROGRAMS\$StartMenuFolder"
 
-  DeleteRegKey /ifempty HKCU "Software\Swivel"
-  DeleteRegKey  HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel"
+  DeleteRegKey /ifempty HKCU "Software\Swivel2"
+  DeleteRegKey  HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2"
 
 SectionEnd

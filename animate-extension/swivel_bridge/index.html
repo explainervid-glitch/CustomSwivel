@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Send to Swivel</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="panel">
+        <div id="statusRow">
+            <div id="statusText">
+                <div id="header">
+                    <span id="dot" class="dot off"></span>
+                    <span id="state">Checking for Swivel&hellip;</span>
+                </div>
+                <div id="doc">No document open</div>
+            </div>
+            <button id="launch" class="secondary" style="display:none" title="Open Swivel App">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/>
+                    <path d="m21 3-9 9"/>
+                    <path d="M15 3h6v6"/>
+                </svg>
+            </button>
+        </div>
+
+        <div id="convertRow">
+            <div id="hint"><span>Create SWF first </span> (Ctrl+Enter)</div>
+            <button id="convert" style="display:block" title="Convert to MP4 in one click">
+                Render in Swivel
+            </button>
+        </div>
+
+        <div id="actions">
+            <button id="send" class="secondary" title="Add SWF to Swivel input">Add to Swivel input</button>
+            <button id="grab" class="secondary" title="Export the current frame as a PNG at stage size">Grab Still</button>
+        </div>
+        <div id="progressWrap" style="display:none">
+            <div id="progressBar"><div id="progressFill"></div></div>
+            <span id="progressLabel">Idle</span>
+        </div>
+
+
+
+    </div>
+
+    <script src="./js/CSInterface.js"></script>
+    <script src="./js/panel.js"></script>
+</body>
+</html>

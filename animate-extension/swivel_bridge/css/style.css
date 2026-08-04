@@ -1,0 +1,222 @@
+@font-face {
+    font-family: "Inter Tight";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/InterTight.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                   U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
+                   U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Inter Tight";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/InterTight-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+                   U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+                   U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+                   U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    /* Auto, not 100% -- the panel is resized to its content via
+       CSInterface.resizeContent, so a forced full height would fight it. */
+    height: auto;
+    background: #1e1e1e;
+    color: #d8d8d8;
+    font: 12px/1.4 "Inter Tight", "Calibri", sans-serif;
+    -webkit-user-select: none;
+}
+
+#panel {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#statusRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #3f3f3f;
+}
+
+#statusText {
+    flex: 1;
+    min-width: 0;
+}
+
+#actions {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+/* Outlined rather than filled, so the primary action stays the only solid
+   button in the panel. */
+#actions button {
+    background: transparent;
+    border: 1px solid #5a5a5a;
+    color: #d8d8d8;
+    font-weight: 400;
+}
+
+#actions button:hover:enabled {
+    background: #3a3a3a;
+    border-color: #7a7a7a;
+}
+
+#actions button:active:enabled {
+    background: #2a2a2a;
+    border-color: #5a5a5a;
+}
+
+#actions button:disabled {
+    background: transparent;
+    border-color: #3a3a3a;
+    color: #6a6a6a;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 7px;
+    flex: none;
+}
+
+.dot.on   { background: #2892e9; }
+.dot.off  { background: #8a8a8a; }
+.dot.busy { background: #e0b040; }
+
+#state {
+    font-size: 11px;
+    color: #b4b4b4;
+    word-break: break-word;
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
+}
+
+#doc {
+    font-size: 11px;
+    color: #8a8a8a;
+    word-break: break-all;
+}
+
+#hint {
+    font-size: 11px;
+    font-weight: 600;
+    color: #d8d8d8;
+    word-break: break-word;
+}
+
+#hint span {
+    font-weight: 400;
+    color: #8a8a8a;
+}
+
+#convertRow {
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    /* Spacing is owned by the containers (gap / margin-bottom), so buttons
+       carry none of their own -- otherwise the two stack up. */
+    margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 400;
+    color: #ffffff;
+    background: #2892e9;
+}
+
+button:hover:enabled  { background: #1a547a; }
+button:active:enabled { background: #72b7f0; }
+
+button:disabled {
+    background: #4a4a4a;
+    color: #808080;
+    cursor: default;
+}
+
+button.secondary {
+    background: #4a4a4a;
+    color: #d8d8d8;
+    font-weight: 400;
+}
+
+button.secondary:hover:enabled { background: #585858; }
+
+#launch {
+    width: auto;
+    flex: none;
+    padding: 8px 10px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    align-self: center;
+}
+
+#launch svg {
+    display: block;
+}
+
+#state.ok  { color: #d8d8d8; }
+#state.err { color: #ef7a7a; }
+
+#progressWrap {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+#progressBar {
+    width: 100%;
+    height: 6px;
+    background: #3a3a3a;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+#progressFill {
+    height: 100%;
+    width: 0%;
+    background: #2892e9;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+#progressLabel {
+    font-size: 10px;
+    color: #8a8a8a;
+    word-break: break-word;
+}
+

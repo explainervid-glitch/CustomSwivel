@@ -283,7 +283,12 @@ class Application extends Binding.Bindable
 				comp = numericStepper;
 				
 			case "rectangle":
-				var rectangle = new Rectangle(Std.parseInt(uiData.att.color), Std.parseFloat(uiData.att.width), Std.parseFloat(uiData.att.height));
+				var rectangle = new Rectangle(
+					Std.parseInt(uiData.att.color),
+					Std.parseFloat(uiData.att.width),
+					Std.parseFloat(uiData.att.height),
+					if(uiData.has.radius) Std.parseFloat(uiData.att.radius) else 0
+				);
 				comp = rectangle;
 				
 			default:

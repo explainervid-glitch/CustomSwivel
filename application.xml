@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<application xmlns="http://ns.adobe.com/air/application/27.0">
+<application xmlns="http://ns.adobe.com/air/application/33.1">
 	
-	<id>com.newgrounds.swivel.Swivel</id>
-	<versionNumber>1.12</versionNumber>
-	<filename>Swivel</filename>
-	
-	<name>Swivel</name>
+	<!--
+	  Distinct id from the shipping Swivel. AIR is single-instance per id, so
+	  sharing one meant launching this build merely forwarded the invocation
+	  to an already-running official Swivel instead of starting.
+	-->
+	<id>com.newgrounds.swivel.Swivel2</id>
+	<versionNumber>2.0</versionNumber>
+	<filename>Swivel2</filename>
+
+	<name>Swivel 2</name>
 	<description>SWF-to-video converter</description>
 	<copyright>2013 Newgrounds.com, Inc.</copyright>
 	<supportedProfiles>extendedDesktop desktop</supportedProfiles>
@@ -16,7 +21,7 @@
 		<image512x512>assets/icons/SWV_PNG-512.png</image512x512>
 	</icon>
 	<initialWindow>
-		<title>Swivel</title>
+		<title>Swivel 2</title>
 		<content>bin/Swivel.swf</content>
 		<systemChrome>none</systemChrome>
 		<transparent>true</transparent>

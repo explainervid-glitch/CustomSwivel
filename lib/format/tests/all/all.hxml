@@ -1,0 +1,32 @@
+-swf bin/all9.swf
+params.hxml
+format.tools.MemoryInput
+format.tools.MemoryBytes
+
+--next
+-neko bin/all.n
+params.hxml
+
+--next
+-js bin/all.js
+params.hxml
+
+--next
+-php bin/php
+params.hxml
+
+--next
+-cpp bin/cpp
+params.hxml
+
+--next
+-java bin/java
+params.hxml
+
+--next
+-cs bin/cs
+params.hxml
+
+--next
+-python bin/test.py
+params.hxml

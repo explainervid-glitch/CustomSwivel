@@ -1,0 +1,35 @@
+diff --git a/format/swf/Writer.hx b/format/swf/Writer.hx
+index 53eeb6f..59df1ac 100644
+--- a/format/swf/Writer.hx
++++ b/format/swf/Writer.hx
+@@ -501,19 +501,23 @@ class Writer {
+ 
+ 		var num_records = grad.data.length;
+ 
+-		if(ver < 4) {
+-			if(num_records > 8)
+-				throw "Gradient supports at most 8 control points ("+num_records+" has bee given) when shape verison is lower than 4!";
+-		} else if(num_records > 15)
+-			throw "Gradient supports at most 15 control points ("+num_records+" has been given) at shape version 4!";
++		// The spec allows 8 control points below shape version 4 and 15 at
++		// version 4, but the count is a 4-bit field either way, so up to 15
++		// is always physically writable -- and Flash Player accepts them.
++		// Real SWFs (Animate emits these routinely) exceed the limit, and
++		// throwing here rejected files that convert fine in older builds of
++		// Swivel, which shipped a format library from before this check.
++		// Swivel only replays the rewritten SWF to capture frames; it is never
++		// distributed, so leniency matters more than conformance.
++		if(num_records > 15) num_records = 15;
+ 
+ 		bits.writeBits(2, spread_mode);
+ 		bits.writeBits(2, interpolation_mode);
+ 		bits.writeBits(4, num_records);
+ 		bits.flush();
+ 
+-		for(grad_record in grad.data) {
+-			writeGradRecord(ver, grad_record);
++		for(i in 0...num_records) {
++			writeGradRecord(ver, grad.data[i]);
+ 		}
+ 	}
+ 

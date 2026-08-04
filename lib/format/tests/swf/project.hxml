@@ -1,0 +1,10 @@
+# Test
+-neko bin/test.n
+-main Test
+-cp ../..
+
+--next
+# FibAsm
+-swf bin/fibasm.swf
+-main FibAsm
+-cp ../..

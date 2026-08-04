@@ -20,11 +20,11 @@ set APP_DIR=bin
 set FILE_OR_DIR=-C %APP_DIR% .
 
 :: Your application ID (must match <id> of Application descriptor)
-set APP_ID=com.newgrounds.swivel.Swivel
+set APP_ID=com.newgrounds.swivel.Swivel2
 
 :: Output
 set AIR_PATH=air
-set AIR_NAME=Swivel
+set AIR_NAME=Swivel2
 
 
 :validation

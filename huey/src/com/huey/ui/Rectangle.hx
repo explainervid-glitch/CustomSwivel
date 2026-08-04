@@ -20,10 +20,20 @@
 package com.huey.ui;
 
 class Rectangle extends Component {
-	public function new(color : Int, width : Float, height : Float) {
+	/**
+	 * `color` is ARGB -- the high byte is alpha, so 0xff202020 is opaque and
+	 * 0x80202020 is half transparent.
+	 *
+	 * `radius` rounds the corners. 0 (the default) draws a plain rectangle,
+	 * preserving the original behaviour.
+	 */
+	public function new(color : Int, width : Float, height : Float, ?radius : Float = 0) {
 		var shape = new flash.display.Shape();
 		shape.graphics.beginFill(color, (color >>> 24) / 255.0);
-		shape.graphics.drawRect(0, 0, width, height);
+		if (radius > 0)
+			shape.graphics.drawRoundRect(0, 0, width, height, radius * 2, radius * 2);
+		else
+			shape.graphics.drawRect(0, 0, width, height);
 		shape.graphics.endFill();
 		super(shape);
 	}

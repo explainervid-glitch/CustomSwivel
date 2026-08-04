@@ -124,7 +124,6 @@ class Label extends Component {
 		_implText.addEventListener(flash.events.FocusEvent.FOCUS_OUT, function(_) dispatchChange());
 		
 		autoSize = true;
-		_implText.embedFonts = true;
 		_implText.selectable = false;
 		_textFormat = new TextFormat("Arial", 12, 0x000000, false, false, false);
 		updateTextFormat();
@@ -136,7 +135,59 @@ class Label extends Component {
 	private var _textFormat : flash.text.TextFormat;
 	private var _changeTimer : haxe.Timer;
 	
+	/**
+	 * Names of the fonts compiled into assets/SwivelFonts.swf, read once.
+	 *
+	 * A TextField needs embedFonts = true to use an embedded font, and false
+	 * to use one installed on the machine. Getting it wrong renders nothing at
+	 * all -- no fallback -- so it is decided per font name rather than being
+	 * hardcoded. That lets the markup name any installed font while the
+	 * original embedded ones keep working.
+	 */
+	private static var _embeddedFonts : Map<String, Bool>;
+	private static var _deviceFonts : Map<String, Bool>;
+
+	private static function readFontLists() : Void {
+		if(_embeddedFonts != null) return;
+
+		_embeddedFonts = new Map();
+		_deviceFonts = new Map();
+
+		try {
+			for(font in flash.text.Font.enumerateFonts(false)) _embeddedFonts.set(font.fontName, true);
+
+			// enumerateFonts(true) adds the machine's installed fonts, so
+			// anything here that was not in the embedded pass is a device font.
+			for(font in flash.text.Font.enumerateFonts(true)) {
+				if(!_embeddedFonts.exists(font.fontName)) _deviceFonts.set(font.fontName, true);
+			}
+		} catch(error : Dynamic) {}
+	}
+
+	/**
+	 * Whether the TextField should use an embedded font for `fontName`.
+	 *
+	 * Defaults to true, matching the original hardcoded behaviour. Fonts that
+	 * come in through -swf-lib are not always reported by enumerateFonts even
+	 * though they render perfectly with embedFonts = true, so assuming
+	 * "embedded" is the safe answer -- guessing "device" for a font the
+	 * machine does not have renders nothing at all.
+	 *
+	 * Only a positively identified installed font turns embedding off, which
+	 * is what lets the markup name any system font.
+	 */
+	private static function shouldEmbed(fontName : String) : Bool {
+		if(fontName == null) return true;
+
+		readFontLists();
+
+		if(_embeddedFonts.exists(fontName)) return true;
+		if(_deviceFonts.exists(fontName)) return false;
+		return true;
+	}
+
 	private inline function updateTextFormat() {
+		_implText.embedFonts = shouldEmbed(_textFormat.font);
 		_implText.defaultTextFormat = _textFormat;
 		_implText.setTextFormat(_textFormat);
 	}

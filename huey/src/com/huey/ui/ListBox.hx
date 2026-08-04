@@ -128,7 +128,7 @@ class ListBox extends Container {
 		comp.y = _items.length * 14;
 		// TODO
 		labelComp.x = 15;
-		labelComp.font = "AdvoCut_10pt_st";
+		labelComp.font = "AdvoCut";
 		labelComp.size = 10;
 		labelComp.color = 0x425137;
 		labelComp.autoSize = false;
@@ -141,7 +141,7 @@ class ListBox extends Container {
 		var str = Std.string(_items.length + 1);
 		if(str.length < 2) str = "0" + str;
 		labelComp = new Label(str);
-		labelComp.font = "AdvoCut_10pt_st";
+		labelComp.font = "AdvoCut";
 		labelComp.size = 10;
 		labelComp.color = 0xD16436;
 		labelComp.width = 20;
