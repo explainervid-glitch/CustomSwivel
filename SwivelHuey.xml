@@ -181,10 +181,10 @@
 						<rectangle x="98" y="364" width="734" height="45" color="0xa6ffffff"/>
 						<rectangle x="98" y="409" width="734" height="45" color="0x40ffffff"/>
 						
-						<label text="Input SWFs" x="115" y="216" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="233" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Input SWFs" x="115" y="216" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="233" font="Calibri" size="10" color="0x425137"/>
 
-						<label text="Queue System" x="140" y="255" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Queue System" x="140" y="255" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
 
 						<checkBox x="115" y="255" name="queueCheckBox">
 							<upState><image source="btnRadioUp"/></upState>
@@ -217,10 +217,10 @@
 						<image source="dummybar" x="97" y="287"/>
 
 						<container name="swfSetupContainer">
-							<label text="Movie Duration" x="115" y="296" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="When to start and stop recording" x="116" y="313" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Movie Duration" x="115" y="296" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="When to start and stop recording" x="116" y="313" font="Calibri" size="10" color="0x425137"/>
 
-							<label text="Frame Range" x="460" y="303" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+							<label text="Frame Range" x="460" y="303" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 							
 							<radioGroup name="durationGroup"/>
 							<radioButton x="438" y="302" selected="true" group="durationGroup" name="frameRangeButton">
@@ -234,10 +234,10 @@
 							</radioButton>
 						
 							<container name="frameContainer">
-								<label text="Start:" x="677" y="303" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="false" color="0x425137"/>
+								<label text="Start:" x="677" y="303" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="false" color="0x425137"/>
 								<numericStepper x="715" y="299" name="startFrameStepper" minimum="1" maximum="1" value="1">
 									<image source="textFieldSmall"/>
-										<textBox width="66" textX="8" textY="2" font="AdvoCut" size="10" color="0x425137"/>
+										<textBox width="66" textX="8" textY="2" font="Calibri" size="10" color="0x425137"/>
 									<incButton>
 										<button x="88" y="0">
 											<upState><image source="btnIncUp"/></upState>
@@ -255,10 +255,10 @@
 								</numericStepper>
 
 								
-								<label text="End:" x="685" y="333" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="false" color="0x425137"/>
+								<label text="End:" x="685" y="333" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="false" color="0x425137"/>
 								<numericStepper x="715" y="329" name="endFrameStepper" minimum="1" maximum="1" value="1">
 									<image source="textFieldSmall"/>
-									<textBox width="66" textX="8" textY="2" font="AdvoCut" size="10" color="0x425137">
+									<textBox width="66" textX="8" textY="2" font="Calibri" size="10" color="0x425137">
 									</textBox>
 									<incButton>
 										<button x="88" y="0">
@@ -279,7 +279,7 @@
 
 							<image name="frameStepperImage" x="285" y="290" />
 
-							<label text="Manually Start and Stop Recording" x="460" y="333" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+							<label text="Manually Start and Stop Recording" x="460" y="333" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 							<radioButton x="438" y="332" group="durationGroup" name="manualButton">
 								<hitArea><rectangle x="0" y="0" width="300" height="23"/></hitArea>
 								<upState><image source="btnRadioUp"/></upState>
@@ -292,18 +292,18 @@
 
 							<image source="dummybar" x="97" y="362"/>
 
-							<label text="Render Quality" x="115" y="369" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Controls render quality of the stage" x="116" y="386" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Render Quality" x="115" y="369" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Controls render quality of the stage" x="116" y="386" font="Calibri" size="10" color="0x425137"/>
 							
-							<slider x="438" y="376" minimum="0" maximum="2" step="1" value="2" labelX="211" labelY="0" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="qualitySliderFunc" name="qualitySlider">
+							<slider x="438" y="376" minimum="0" maximum="2" step="1" value="2" labelX="211" labelY="0" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="qualitySliderFunc" name="qualitySlider">
 								<image source="sliderTrack"/>
 								<nub property="x"><image source="btnSliderNubOver" y="2"/></nub>
 							</slider>
 
 							<image source="dummybar" x="97" y="407"/>
 
-							<label text="Bitmap Smoothing" x="115" y="416" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137" />
-							<label text="Force bitmap smoothing on all bitmaps" x="116" y="433" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Bitmap Smoothing" x="115" y="416" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137" />
+							<label text="Force bitmap smoothing on all bitmaps" x="116" y="433" font="Calibri" size="10" color="0x425137"/>
 
 							<checkBox x="438" y="419" name="bitmapSmoothingCheckBox">
 								<upState><image source="btnCheckUp"/></upState>
@@ -327,8 +327,8 @@
 						<rectangle x="98" y="374" width="734" height="45" color="0xa6ffffff"/>
 						<rectangle x="98" y="419" width="734" height="45" color="0x40ffffff"/>
 
-						<label text="Output Video Name" x="115" y="201" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="The filename for the final video" x="116" y="218" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Output Video Name" x="115" y="201" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="The filename for the final video" x="116" y="218" font="Calibri" size="10" color="0x425137"/>
 						
 						<button x="752" y="204" onClick="outputBrowseClickHandler">
 							<upState><image source="btnBrowseUp"/></upState>
@@ -337,17 +337,17 @@
 						</button>
 
 						<image source="textFieldBig" x="438" y="204" />
-						<textBox width="312" x="438" y="204" textX="8" textY="1" font="AdvoCut" size="10" bold="true" color="0x425137" name="outputFileBox"/>
+						<textBox width="312" x="438" y="204" textX="8" textY="1" font="Calibri" size="10" bold="true" color="0x425137" name="outputFileBox"/>
 						
 						<image source="dummybar" x="97" y="237"/>
 						
-						<label text="Video Size" x="115" y="246" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Width and height of the final video in pixels" x="116" y="263" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Video Size" x="115" y="246" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Width and height of the final video in pixels" x="116" y="263" font="Calibri" size="10" color="0x425137"/>
 
-						<label text="Width:" x="437" y="252" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<numericStepper x="480" y="249" textX="8" textY="1" font="AdvoCut" size="10" color="0x425137" name="widthStepper" minimum="8"  step="2">
+						<label text="Width:" x="437" y="252" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<numericStepper x="480" y="252" textX="8" textY="1" font="Calibri" size="10" color="0x425137" name="widthStepper" minimum="8"  step="2">
 							<image source="textFieldSmall"/>
-							<textBox width="66" textX="8" textY="2" font="AdvoCut" size="10" color="0x425137"/>
+							<textBox width="66" textX="8" textY="2" font="Calibri" size="10" color="0x425137"/>
 							<incButton>
 								<button x="88" y="0">
 									<upState><image source="btnIncUp"/></upState>
@@ -364,10 +364,10 @@
 							</decButton>
 						</numericStepper>
 
-						<label text="Height:" x="632" y="252" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<numericStepper x="680" y="249" textX="8" textY="1" font="AdvoCut" size="10" color="0x425137" name="heightStepper" minimum="8"  step="2">
+						<label text="Height:" x="632" y="252" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<numericStepper x="680" y="252" textX="8" textY="1" font="Calibri" size="10" color="0x425137" name="heightStepper" minimum="8"  step="2">
 							<image source="textFieldSmall"/>
-								<textBox width="66" textX="8" textY="2" font="AdvoCut" size="10" color="0x425137"/>
+								<textBox width="66" textX="8" textY="2" font="Calibri" size="10" color="0x425137"/>
 							<incButton>
 								<button x="88" y="0">
 									<upState><image source="btnIncUp"/></upState>
@@ -395,11 +395,11 @@
 
 						<image source="dummybar" x="97" y="282"/>
 						
-						<label text="Scale Mode" x="115" y="291" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Adjust how SWFs are scaled to fit the video dimensions" x="116" y="308" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Scale Mode" x="115" y="291" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Adjust how SWFs are scaled to fit the video dimensions" x="116" y="308" font="Calibri" size="10" color="0x425137"/>
 
 						<radioGroup name="scaleModeGroup"/>
-						<label text="Crop" x="464" y="296" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Crop" x="464" y="296" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="438" y="294" group="scaleModeGroup" selected="true" name="cropButton">
 							<hitArea><rectangle x="0" y="0" width="100" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -410,7 +410,7 @@
 							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
 						</radioButton>
 
-						<label text="Letterbox" x="594" y="296" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Letterbox" x="594" y="296" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="568" y="294" group="scaleModeGroup" name="letterboxButton">
 							<hitArea><rectangle x="0" y="0" width="100" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -421,7 +421,7 @@
 							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
 						</radioButton>
 						
-						<label text="Stretch to Fit" x="744" y="296" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Stretch to Fit" x="744" y="296" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="718" y="294" group="scaleModeGroup"  name="exactFitButton">
 							<hitArea><rectangle x="0" y="0" width="100" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -434,8 +434,8 @@
 
 						<image source="dummybar" x="97" y="327"/>
 						
-						<label text="Transparent Background" x="115" y="336" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Render the movie with an alpha channel" x="116" y="353" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Transparent Background" x="115" y="336" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Render the movie with an alpha channel" x="116" y="353" font="Calibri" size="10" color="0x425137"/>
 						
 						<checkBox x="438" y="339" selected="false" name="transparentBgCheckBox">
 							<upState><image source="btnCheckUp"/></upState>
@@ -448,13 +448,13 @@
 						
 						<image source="dummybar" x="97" y="372"/>
 						
-						<slider x="438" y="432" minimum="262144" maximum="25165824" step="512" labelX="211" labelY="0" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="videoBitrateLabelFunc" name="videoBitrateSlider" value="4194304">
+						<slider x="438" y="432" minimum="262144" maximum="25165824" step="512" labelX="211" labelY="0" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="videoBitrateLabelFunc" name="videoBitrateSlider" value="12582912">
 							<image source="sliderTrack"/>
 							<nub property="x"><image source="btnSliderNubOver" y="2"/></nub>
 						</slider>
 						
-						<label text="Video Codec" x="115" y="381" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Select video compression" x="116" y="398" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Video Codec" x="115" y="381" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Select video compression" x="116" y="398" font="Calibri" size="10" color="0x425137"/>
 						
 						<!--<image x="438" y="387" source="listBoxBigBG"/>
 						<listBox x="438" y="387" name="codecListBox" />-->
@@ -463,8 +463,8 @@
 						<selectBox x="438" y="384" name="codecSelectBox" />
 						
 						
-						<label text="Video Bitrate" x="115" y="426" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Higher values result in increased quality and file size" x="116" y="443" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Video Bitrate" x="115" y="426" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Higher values result in increased quality and file size" x="116" y="443" font="Calibri" size="10" color="0x425137"/>
 						
 
 						
@@ -482,11 +482,11 @@
 						<rectangle x="98" y="379" width="734" height="45" color="0x40ffffff"/>
 						<rectangle x="98" y="424" width="734" height="45" color="0xa6ffffff"/>
 						
-						<label text="Audio Source" x="115" y="226" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Select the audio source" x="116" y="243" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Audio Source" x="115" y="226" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Select the audio source" x="116" y="243" font="Calibri" size="10" color="0x425137"/>
 						
 						<radioGroup name="audioGroup"/>
-						<label text="No Audio" x="464" y="206" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="No Audio" x="464" y="206" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="438" y="204" group="audioGroup" name="noAudioButton">
 							<hitArea><rectangle x="0" y="0" width="300" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -497,7 +497,7 @@
 							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
 						</radioButton>
 						
-						<label text="Extract from SWF" x="464" y="233" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Extract from SWF" x="464" y="233" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="438" y="231" selected="true" group="audioGroup" name="swfAudioButton">
 							<hitArea><rectangle x="0" y="0" width="300" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -508,7 +508,7 @@
 							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
 						</radioButton>
 						
-						<label text="External Audio Track" x="464" y="260" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="External Audio Track" x="464" y="260" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="438" y="258" group="audioGroup" name="externalAudioButton">
 							<hitArea><rectangle x="0" y="0" width="300" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -522,11 +522,11 @@
 						<image source="dummybar" x="97" y="287"/>
 						
 						<container name="externalAudioContainer">
-							<label text="External Track" x="115" y="296" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Browse for an audio track for the video" x="116" y="313" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="External Track" x="115" y="296" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Browse for an audio track for the video" x="116" y="313" font="Calibri" size="10" color="0x425137"/>
 							
 							<image source="textFieldBig" x="438" y="299" />
-							<textBox width="312" x="438" y="299" textX="8" textY="1" font="AdvoCut" size="10" bold="true" color="0x425137" name="externalAudioFileBox" />
+							<textBox width="312" x="438" y="299" textX="8" textY="1" font="Calibri" size="10" bold="true" color="0x425137" name="externalAudioFileBox" />
 							
 							<button x="752" y="299" onClick="audioBrowseClickHandler">
 								<upState><image source="btnBrowseUp"/></upState>
@@ -537,11 +537,11 @@
 						
 						<image source="dummybar" x="97" y="332"/>
 						
-						<label text="Audio Channels" x="115" y="341" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Number of audio channels" x="116" y="358" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Audio Channels" x="115" y="341" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Number of audio channels" x="116" y="358" font="Calibri" size="10" color="0x425137"/>
 						
 						<radioGroup name="audioChannelGroup"/>
-						<label text="Mono" x="464" y="346" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Mono" x="464" y="346" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="438" y="344" group="audioChannelGroup" name="monoRadioButton">
 							<hitArea><rectangle x="0" y="0" width="100" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -552,7 +552,7 @@
 							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
 						</radioButton>
 
-						<label text="Stereo" x="564" y="346" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
+						<label text="Stereo" x="564" y="346" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137"/>
 						<radioButton x="538" y="344" group="audioChannelGroup" selected="true">
 							<hitArea><rectangle x="0" y="0" width="100" height="23"/></hitArea>
 							<upState><image source="btnRadioUp"/></upState>
@@ -565,23 +565,23 @@
 						
 						<image source="dummybar" x="97" y="379"/>
 						
-						<slider x="438" y="437" minimum="65536" maximum="327680" step="16384" labelX="211" labelY="0" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="audioBitrateLabelFunc" name="audioBitrateSlider" value="131072">
+						<slider x="438" y="437" minimum="65536" maximum="327680" step="16384" labelX="211" labelY="0" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="audioBitrateLabelFunc" name="audioBitrateSlider" value="327680">
 							<image source="sliderTrack"/>
 							<nub property="x"><image source="btnSliderNubOver" y="2"/></nub>
 						</slider>
 						
-						<label text="Audio Codec" x="115" y="388" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Select audio compression" x="116" y="405" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Audio Codec" x="115" y="388" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Select audio compression" x="116" y="405" font="Calibri" size="10" color="0x425137"/>
 						
 						<!--<image x="438" y="394" source="listBoxBigBG"/>
 						<listBox x="438" y="394" name="audioCodecListBox" />-->
 						
 						<image source="dummybar" x="97" y="422"/>
 												
-						<selectBox x="438" y="389" name="audioCodecSelectBox" />
+						<selectBox x="438" y="395" name="audioCodecSelectBox" />
 						
-						<label text="Audio Bitrate" x="115" y="431" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Higher values result in increased quality and file size" x="116" y="448" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Audio Bitrate" x="115" y="431" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Higher values result in increased quality and file size" x="116" y="448" font="Calibri" size="10" color="0x425137"/>
 						
 						
 						
@@ -596,8 +596,8 @@
 						<rectangle x="98" y="379" width="734" height="45" color="0x40ffffff"/>
 						<rectangle x="98" y="424" width="734" height="45" color="0xa6ffffff"/>
 						
-						<label text="Enable Watermark" x="115" y="201" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Display a graphic over top of the video" x="116" y="218" font="AdvoCut" size="10" color="0x425137"/>
+						<label text="Enable Watermark" x="115" y="201" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Display a graphic over top of the video" x="116" y="218" font="Calibri" size="10" color="0x425137"/>
 						
 						<checkBox x="438" y="204" name="watermarkEnabledCheckBox">
 							<upState><image source="btnCheckUp"/></upState>
@@ -610,11 +610,11 @@
 						
 						<image source="dummybar" x="97" y="237"/>
 						<container name="watermarkSettingsContainer">
-							<label text="Watermark Image" x="115" y="246" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Browse for an image" x="116" y="263" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Watermark Image" x="115" y="246" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Browse for an image" x="116" y="263" font="Calibri" size="10" color="0x425137"/>
 							
 							<image source="textFieldBig" x="438" y="249" />
-							<textBox width="312" x="438" y="249" textX="8" textY="1" font="AdvoCut" size="10" bold="true" color="0x425137" name="watermarkFileBox" />
+							<textBox width="312" x="438" y="249" textX="8" textY="1" font="Calibri" size="10" bold="true" color="0x425137" name="watermarkFileBox" />
 							
 							<button x="752" y="249" onClick="overlayBrowseClickHandler">
 								<upState><image source="btnBrowseUp"/></upState>
@@ -624,8 +624,8 @@
 							
 							<image source="dummybar" x="97" y="282"/>
 							
-							<label text="Alignment" x="115" y="316" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Position the watermark in the frame" x="116" y="333" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Alignment" x="115" y="316" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Position the watermark in the frame" x="116" y="333" font="Calibri" size="10" color="0x425137"/>
 							
 							<radioGroup name="alignmentGroup"/>
 							<radioButton x="438" y="299" group="alignmentGroup">
@@ -705,20 +705,20 @@
 						
 							<image source="dummybar" x="97" y="378"/>
 							
-							<label text="Size" x="115" y="386" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Set the size of the watermark" x="116" y="403" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Size" x="115" y="386" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Set the size of the watermark" x="116" y="403" font="Calibri" size="10" color="0x425137"/>
 							
-							<slider x="438" y="393" minimum="0" maximum="4" step=".01" labelX="211" labelY="0" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="alphaSliderFunc" name="watermarkSizeSlider" value="1.0">
+							<slider x="438" y="393" minimum="0" maximum="4" step=".01" labelX="211" labelY="0" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="alphaSliderFunc" name="watermarkSizeSlider" value="1.0">
 								<image source="sliderTrack"/>
 								<nub property="x"><image source="btnSliderNubOver" y="2"/></nub>
 							</slider>
 							
 							<image source="dummybar" x="97" y="422"/>
 							
-							<label text="Transparency" x="115" y="431" font="Swis721 Cn BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-							<label text="Set the opacity of the watermark" x="116" y="448" font="AdvoCut" size="10" color="0x425137"/>
+							<label text="Transparency" x="115" y="431" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+							<label text="Set the opacity of the watermark" x="116" y="448" font="Calibri" size="10" color="0x425137"/>
 							
-							<slider x="438" y="438" minimum="0" maximum="1" step=".01" labelX="211" labelY="0" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="alphaSliderFunc" name="watermarkAlphaSlider" value="1.0">
+							<slider x="438" y="438" minimum="0" maximum="1" step=".01" labelX="211" labelY="0" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" color="0x425137" labelFunc="alphaSliderFunc" name="watermarkAlphaSlider" value="1.0">
 								<image source="sliderTrack"/>
 								<nub property="x"><image source="btnSliderNubOver" y="2"/></nub>
 							</slider>
@@ -732,7 +732,7 @@
 				<image source="bgConverting" x="0" y="0"/>
 				<scaledImage name="_previewImage" x="114" y="64" width="702" height="395" />
 				
-				<label x="96" y="486" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0x425137" name="progressText" />
+				<label x="96" y="486" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0x425137" name="progressText" />
 				<progressBar x="101" y="509" minimum="0" maximum="1" step="0" labelX="9999" name="progressBar">
 					<nub property="width"><image source="progressBar"/></nub>
 				</progressBar>
@@ -756,20 +756,20 @@
 				
 				<image source="txtComplete" x="312" y="194"/>
 
-				<label align="right" width="220" text="Your Video:" x="197" y="234" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
-				<label x="437" y="234" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0xFF9900" name="videoNameText" />
-				<label text="Click to open your video" x="438" y="247" font="AdvoCut" size="10" bold="false" color="0x7E9D4F"/>
+				<label align="right" width="220" text="Your Video:" x="197" y="234" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
+				<label x="437" y="234" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0xFF9900" name="videoNameText" />
+				<label text="Click to open your video" x="438" y="247" font="Calibri" size="10" bold="false" color="0x7E9D4F"/>
 				<button onClick="videoNameClickHandler">
 					<hitArea><rectangle x="437" y="234" width="300" height="40" depth="1"/></hitArea>
 				</button>
 				
-				<label align="right" width="220" text="Size on Disk:" x="197" y="274" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
-				<label x="437" y="274" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0xFFFFFF" name="fileSizeText" />
+				<label align="right" width="220" text="Size on Disk:" x="197" y="274" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
+				<label x="437" y="274" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0xFFFFFF" name="fileSizeText" />
 				
-				<label align="right" width="220" text="Conversion Time:" x="197" y="304" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
-				<label x="437" y="304" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0xFFFFFF" name="timeText"/>
+				<label align="right" width="220" text="Conversion Time:" x="197" y="304" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0x7E9D4F"/>
+				<label x="437" y="304" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0xFFFFFF" name="timeText"/>
 				
-				<label x="96" y="486" font="Swis721 Cn BT" letterSpacing="1" size="13" bold="true" color="0x425137" text="Complete!"/>
+				<label x="96" y="486" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="13" bold="true" color="0x425137" text="Complete!"/>
 
 				<image source="progressBar" x="101" y="509"/>
 				
@@ -783,7 +783,7 @@
 			<state name="error">
 				<image source="bgConverting" x="0" y="0"/>
 				
-				<label x="120" y="70" font="AdvoCut" size="10" color="0xffffff" width="700" height="400" wordWrap="true" name="errorText" editable="true" />
+				<label x="120" y="70" font="Calibri" size="10" color="0xffffff" width="700" height="400" wordWrap="true" name="errorText" editable="true" />
 			</state>
 		</container>
 		
@@ -808,7 +808,7 @@
 		<container name="aboutBox" visible="false">
 			<image source="killBg" x="10" y="10" />
 			<image source="aboutBoxLights" x="127" y="117" />
-			<label alpha=".25" text="Swivel ©2013 Newgrounds.com, Inc.\nSwivel uses software from the FFmpeg project, licensed under the GPLv3.\nAll logos and trademarks are the property of their respective owners." width="800" height="60" x="50" y="496" color="0xffffff" font="Swis721 Cn BT" letterSpacing="1" size="12" bold="true" align="center" />
+			<label alpha=".25" text="Swivel ©2013 Newgrounds.com, Inc.\nSwivel uses software from the FFmpeg project, licensed under the GPLv3.\nAll logos and trademarks are the property of their respective owners." width="800" height="60" x="50" y="496" color="0xffffff" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="12" bold="true" align="center" />
 			<button onClick="aboutCloseHandler">
 				<hitArea><rectangle x="0" y="0" width="920" height="580"/></hitArea>
 			</button>
@@ -821,8 +821,8 @@
 				<hitArea><rectangle x="0" y="0" width="90" height="32"/></hitArea>
 				<overState><image source="btnLicenseOver"/></overState>
 			</button>
-			<label name="versionText" x="260" y="191" font="AdvoCut" size="10" bold="true" color="0x404D35" align="right" width="150" />
-			<label name="creditsText" x="430" y="158" width="270" height="1500" font="AdvoCut" size="10" bold="true" color="0xffffff" align="center" wordWrap="true"
+			<label name="versionText" x="260" y="191" font="Calibri" size="10" bold="true" color="0x404D35" align="right" width="150" />
+			<label name="creditsText" x="430" y="158" width="270" height="1500" font="Calibri" size="10" bold="true" color="0xffffff" align="center" wordWrap="true"
 			text="SWIVEL\nSWF-to-Video Converter\n©2012-2017 Newgrounds.com, Inc.\n\nDeveloped by Mike Welsh\nInterface by Stamper\nVox by Hania Lee\n\nDeveloped using Haxe and Adobe AIR\n\nThis software utilizes the FFmpeg project with other supporting libraries, including libx264, libtheora, and libvorbis. These projects are property of their respective owners, and are NOT owned by Newgrounds.com, Inc. These projects are licensed under their respective licenses, compatible with the GPLv3. To view the full licenses, click the License button.\n\nVery special thanks to the maintainers and contributors of FFmpeg and these projects. This program would not be possible without your awesome work!\n\n\nTesters\n\nChris 'Oney' O'Neill\nChristina 'Jaxxy' Tomar\nDon Greger\nMarco 'Evil-Dog' Arsenault\nHarry Partridge\nJeff Bandelin\nJeremy Zaczek\nJonas Boda\nMindChamber\nJosh 'Tomamoto' Tomar\nLuka Marcetic\nMark Schneider\nMatt 'Krinkels' Jolly\nMick 'RicePirate' Lauer\nMichael Swain\nSteve 'SardonicSamurai' V\nShawn 'Afro-Ninja' Tanner\nNick Pasto\nZach 'PsychicPebbles' Hadel\nRobert Lovelett\nRyan 'rtil' Miller\nSpazkid\nWade Fulp\nZachary Lew\nMatt 'Patonion' Paton\nRyan 'MiddleFingerRings' Maddox\nAdam Phillips\nAnyone I forgot\n\nVery Special Thanks\n\nAshley 'Jellybean' Aberg\nTom Fulp\nSushi (the cat)\nRobotron 2084\nRob Lovelett\nDavid Robbins\ncaptin of cats\nMike 'Spiked3' Partain\nJustin Welsh\nTim Sanker\nDoylestown 3rd Strike"/>
 			
 			

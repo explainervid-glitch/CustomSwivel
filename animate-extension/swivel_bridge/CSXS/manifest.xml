@@ -49,6 +49,16 @@
                             <Width>800</Width>
                         </MaxSize>
                     </Geometry>
+                    <!-- Shown when the panel is collapsed to an icon in the
+                         dock. PNG only at 23x23; CEP does not read SVG.
+                         The Dark variants are used by Animate's dark themes. -->
+                    <Icons>
+                        <Icon Type="Normal">./icons/icon-normal.png</Icon>
+                        <Icon Type="RollOver">./icons/icon-rollover.png</Icon>
+                        <Icon Type="Disabled">./icons/icon-disabled.png</Icon>
+                        <Icon Type="DarkNormal">./icons/icon-dark-normal.png</Icon>
+                        <Icon Type="DarkRollOver">./icons/icon-dark-rollover.png</Icon>
+                    </Icons>
                 </UI>
             </DispatchInfo>
         </Extension>

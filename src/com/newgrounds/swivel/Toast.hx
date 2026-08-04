@@ -41,7 +41,7 @@ class Toast extends Container {
 		add(_background);
 
 		_label = new Label("");
-		_label.font = "AdvoCut";
+		_label.font = "Calibri";
 		_label.size = 10;
 		_label.color = 0xffffff;
 		_label.wordWrap = true;

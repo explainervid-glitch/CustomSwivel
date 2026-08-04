@@ -20,7 +20,7 @@
     var TIMEOUT_MS = 5000;
     /* Swivel answers its port before the UI is usable -- the intro splash
        covers the window for a few seconds after launch. */
-    var LAUNCH_SETTLE_MS = 6000;
+    var LAUNCH_SETTLE_MS = 3000;
     var POLL_MS = 3000;
 
     var cs = new CSInterface();
@@ -44,7 +44,8 @@
     /* Where Swivel might live. First hit wins; a browsed path is remembered. */
     var SWIVEL_CANDIDATES = [
         "C:\\Program Files (x86)\\Swivel2\\Swivel2.exe",
-        "C:\\01 Development\\theNewSwivel\\Swivel\\bin\\Swivel\\Swivel2.exe"
+        // "C:\\01 Development\\theNewSwivel\\Swivel\\bin\\Swivel\\Swivel2.exe",
+        "X:\\00. Add On\\Animate\\Swivel\\Swivel2.exe"
     ];
 
     /* Shrinks or grows the panel to match its content. Anything that changes

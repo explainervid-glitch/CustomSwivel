@@ -666,7 +666,7 @@ class Swivel extends Application
 	// ------------------------------------------------------------------
 
 	/** Longest the intro may cover the UI, however its animation behaves. */
-	inline private static var SPLASH_TIMEOUT_MS : Int = 6000;
+	inline private static var SPLASH_TIMEOUT_MS : Int = 4000;
 
 	private var _splashScreen : SplashScreen;
 

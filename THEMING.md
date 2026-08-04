@@ -145,7 +145,7 @@ Only two fonts are available, because they are **embedded** in
 `assets/SwivelFonts.swf`:
 
 - `Swis721 Cn BT` -- headings
-- `AdvoCut` -- body text
+- `Calibri` -- body text
 
 Naming any other font renders nothing. To add fonts you must rebuild
 `SwivelFonts.swf` in Adobe Animate (see below).

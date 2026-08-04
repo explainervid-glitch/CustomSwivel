@@ -51,7 +51,7 @@ class SelectBox extends Container {
 		_textBox.width = 312;
 		_textBox.x = 8;
 		_textBox.y = 1;
-		_textBox.font = "AdvoCut";
+		_textBox.font = "Calibri";
 		_textBox.size = 10;
 		_textBox.bold = true;
 		_textBox.color = 0x425137;
