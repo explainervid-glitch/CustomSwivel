@@ -45,7 +45,7 @@
     var SWIVEL_CANDIDATES = [
         "C:\\Program Files (x86)\\Swivel2\\Swivel2.exe",
         // "C:\\01 Development\\theNewSwivel\\Swivel\\bin\\Swivel\\Swivel2.exe",
-        "X:\\00. Add On\\Animate\\Swivel\\Swivel2.exe"
+        "X:\\00. Add On\\Animate\\Swivel2 Installer\\Swivel\\Swivel2.exe"
     ];
 
     /* Shrinks or grows the panel to match its content. Anything that changes
@@ -66,10 +66,35 @@
         } catch (e) {}
     }
 
+    var statusTextEl = document.getElementById("statusText");
+
+    function stateVisible() {
+        return statusTextEl.className.indexOf("expanded") >= 0;
+    }
+
+    function setStateVisible(visible, remember) {
+        statusTextEl.className = visible ? "expanded" : "";
+        if (remember) {
+            try { window.localStorage.setItem("stateVisible", visible ? "1" : "0"); } catch (e) {}
+        }
+        fitPanelHeight();
+    }
+
+    /* The dot carries the status through colour, so the wording stays hidden
+       until asked for -- errors included. */
+    dotEl.addEventListener("click", function () {
+        setStateVisible(!stateVisible(), true);
+    });
+
     function setState(text, kind) {
         stateEl.textContent = text;
         stateEl.className = kind === "ok" || kind === "err" ? kind : "";
         dotEl.className = "dot " + (kind === "ok" ? "on" : kind === "busy" ? "busy" : "off");
+
+        /* Readable on hover without expanding. */
+        dotEl.title = text;
+
+        fitPanelHeight();
     }
 
     /* Buttons stay enabled while disconnected on purpose -- clicking then
@@ -89,7 +114,9 @@
         grabBtn.disabled = busy;
         copyBtn.disabled = busy;
         convertBtn.disabled = busy;
-        launchBtn.disabled = busy || launching;
+        /* Stays visible once Swivel is open, just greyed -- there is nothing
+           left for it to do. */
+        launchBtn.disabled = busy || launching || connected;
     }
 
     function fileExists(path) {
@@ -495,15 +522,12 @@
                 connected = true;
                 var version = json.version ? " v" + json.version : "";
                 setState("Connected to Swivel" + version, "ok");
-                /* flex, not block -- the button centres its icon with flexbox. */
-                launchBtn.style.display = "none";
                 refreshButtons();
                 fitPanelHeight();
             })
             .catch(function () {
                 connected = false;
                 setState("Swivel not running.", "err");
-                launchBtn.style.display = "flex";
                 refreshButtons();
                 fitPanelHeight();
             });
@@ -518,6 +542,10 @@
         sendBtn.disabled = grabBtn.disabled = true;
         return;
     }
+
+    try {
+        if (window.localStorage.getItem("stateVisible") === "1") setStateVisible(true, false);
+    } catch (e) {}
 
     refreshDocumentName();
     checkSwivel();

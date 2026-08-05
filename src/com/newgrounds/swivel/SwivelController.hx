@@ -53,6 +53,16 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 	@bindable @forward(_recorder) public var scaleMode : ScaleMode;
 	@bindable @forward(_recorder) public var transparentBackground : Bool;
 
+	/**
+	 * How many frames to discard at the start of each recording.
+	 *
+	 * VCAM and similar rigs position the stage from ActionScript, which has
+	 * not run when frame 1 is captured, so that frame shows the scene before
+	 * the camera moves. Set to 1 to drop it.
+	 */
+	public var skipInitialFrames : Int = 0;
+	private var _framesToSkip : Int = 0;
+
 	public var stereoAudio : Bool = true;
 	public var audioSource : AudioSource;
 	
@@ -236,6 +246,7 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 				
 				_recordingStartFrame = 0;
 				_recordingNumFrames = 0;
+				_framesToSkip = skipInitialFrames;
 				_recorder.showWindow = Type.enumEq(job.duration, manual);
 				_recorder.renderQuality = _currentJob.renderQuality;
 
@@ -369,8 +380,16 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 	private var _frame : flash.display.BitmapData;
 	
 	private function onFrameCaptured(frame : flash.display.BitmapData) {
-		if(_ffmpeg != null) _ffmpeg.send( frame.getPixels(frame.rect) );
-	
+		// A VCAM applies its transform from ActionScript, which has not run
+		// yet on the very first frame -- so that frame shows the untransformed
+		// stage. Dropping it discards the bad frame while still letting the
+		// SWF play through it.
+		if(_framesToSkip > 0) {
+			_framesToSkip--;
+		} else if(_ffmpeg != null) {
+			_ffmpeg.send( frame.getPixels(frame.rect) );
+		}
+
 		_recordingNumFrames++;
 		_totalNumFrames++;
 		_frame = frame;

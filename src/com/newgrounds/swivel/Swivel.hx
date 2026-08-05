@@ -136,6 +136,7 @@ class Swivel extends Application
 	public var watermarkSettingsContainer : Component;
 	@bindable private var bitmapSmoothingCheckBox : CheckBox;
 	public var queueCheckBox : CheckBox;
+	public var skipFirstFrameCheckBox : CheckBox;
 	
 	private var progressText : Label;
 	
@@ -861,6 +862,11 @@ class Swivel extends Application
 		_recording = false;
 		recordingButton.selected = false;
 		recordingButton.visible = false;
+
+		// VCAM rigs position the stage from ActionScript, which has not run
+		// when frame 1 is captured, so that frame shows the scene uncropped.
+		_controller.skipInitialFrames =
+			if(skipFirstFrameCheckBox != null && skipFirstFrameCheckBox.selected) 1 else 0;
 		
 		// Queue mode converts each SWF to its own video, one after another.
 		// Without it the controller chains every job into a single output.

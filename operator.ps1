@@ -188,6 +188,14 @@ try {
 
     Copy-Item -Path (Join-Path $sourceDir "*") -Destination $InstallDir -Recurse -Force
 
+    # The uninstaller lives beside this script, not inside the bundle, so it
+    # has to be copied across explicitly.
+    foreach ($file in @("uninstall.bat", "uninstall.ps1")) {
+        $from = Join-Path $scriptDir $file
+        if (Test-Path $from) { Copy-Item $from -Destination $InstallDir -Force }
+        else { Write-Warn "$file not found -- the installed copy will have no uninstaller." }
+    }
+
     Write-Ok "Files copied."
 } catch {
     Write-Err "Failed to copy files: $_"
@@ -219,7 +227,36 @@ try {
 }
 
 # ============================================================
-# 5. VERIFICATION
+# 5. ADD/REMOVE PROGRAMS ENTRY
+# ============================================================
+Write-Step "Registering with Add/Remove Programs..."
+
+$registryKey  = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Swivel2"
+$uninstaller  = Join-Path $InstallDir "uninstall.bat"
+
+try {
+    if (-not (Test-Path $registryKey)) { New-Item -Path $registryKey -Force | Out-Null }
+
+    $sizeKb = [int]((Get-ChildItem $InstallDir -Recurse -File |
+        Measure-Object -Property Length -Sum).Sum / 1KB)
+
+    Set-ItemProperty -Path $registryKey -Name "DisplayName"     -Value $AppName
+    Set-ItemProperty -Path $registryKey -Name "DisplayIcon"     -Value $exePath
+    Set-ItemProperty -Path $registryKey -Name "InstallLocation" -Value $InstallDir
+    Set-ItemProperty -Path $registryKey -Name "Publisher"       -Value "Newgrounds.com, Inc."
+    Set-ItemProperty -Path $registryKey -Name "UninstallString" -Value "`"$uninstaller`""
+    Set-ItemProperty -Path $registryKey -Name "EstimatedSize"   -Value $sizeKb -Type DWord
+    Set-ItemProperty -Path $registryKey -Name "NoModify"        -Value 1 -Type DWord
+    Set-ItemProperty -Path $registryKey -Name "NoRepair"        -Value 1 -Type DWord
+
+    Write-Ok "Listed in Settings > Apps."
+} catch {
+    Write-Warn "Could not register for Add/Remove Programs: $_"
+    Write-Warn "Uninstalling will still work via uninstall.bat."
+}
+
+# ============================================================
+# 6. VERIFICATION
 # ============================================================
 Write-Step "Verifying installation..."
 
@@ -228,7 +265,8 @@ $checks = @(
     @{ Path = (Join-Path $InstallDir "Adobe AIR");               Label = "Adobe AIR runtime" },
     @{ Path = (Join-Path $InstallDir "ffmpeg\win32\ffmpeg.exe"); Label = "ffmpeg.exe"        },
     @{ Path = (Join-Path $InstallDir "META-INF\AIR\debug");      Label = "debug marker"      },
-    @{ Path = $shortcut;                                         Label = "Start Menu shortcut" }
+    @{ Path = $shortcut;                                         Label = "Start Menu shortcut" },
+    @{ Path = $uninstaller;                                      Label = "uninstall.bat"     }
 )
 
 $allOk = $true

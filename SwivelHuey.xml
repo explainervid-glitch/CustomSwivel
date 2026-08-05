@@ -181,12 +181,23 @@
 						<rectangle x="98" y="364" width="734" height="45" color="0xa6ffffff"/>
 						<rectangle x="98" y="409" width="734" height="45" color="0x40ffffff"/>
 						
-						<label text="Input SWFs" x="115" y="216" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
-						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="233" font="Calibri" size="10" color="0x425137"/>
+						<label text="Input SWFs" x="115" y="201" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Convert an SWF or chain multiple SWFs back-to-back" x="116" y="219" font="Calibri" size="10" color="0x425137"/>
 
-						<label text="Queue System" x="140" y="255" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+						<label text="Queue System" x="140" y="240" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
 
-						<checkBox x="115" y="255" name="queueCheckBox">
+						<checkBox x="115" y="240" name="queueCheckBox">
+							<upState><image source="btnRadioUp"/></upState>
+							<overState><image source="btnRadioOver"/></overState>
+							<downState><image source="btnRadioDown"/></downState>
+							<selectedUpState><image source="btnRadioSelected"/></selectedUpState>
+							<selectedOverState><image source="btnRadioOver"/></selectedOverState>
+							<selectedDownState><image source="btnRadioDown"/></selectedDownState>
+						</checkBox>
+
+						<label text="Skip First Frame" x="140" y="262" font="Swiss 721 Bold Condensed BT" letterSpacing="1" size="14" bold="true" color="0x425137"/>
+
+						<checkBox x="115" y="262" name="skipFirstFrameCheckBox" selected="true">
 							<upState><image source="btnRadioUp"/></upState>
 							<overState><image source="btnRadioOver"/></overState>
 							<downState><image source="btnRadioDown"/></downState>

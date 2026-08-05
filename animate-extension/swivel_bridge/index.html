@@ -11,28 +11,30 @@
             <div id="statusText">
                 <div id="header">
                     <span id="dot" class="dot off"></span>
-                    <span id="state">Checking for Swivel&hellip;</span>
+                    <div id="doc">No document open</div>
                 </div>
-                <div id="doc">No document open</div>
+                <span id="state">Checking for Swivel&hellip;</span>
             </div>
-            <button id="launch" class="secondary" style="display:none" title="Open Swivel App">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/>
-                    <path d="m21 3-9 9"/>
-                    <path d="M15 3h6v6"/>
-                </svg>
-            </button>
         </div>
 
         <div id="convertRow">
             <div id="hint"><span>Create SWF first </span> (Ctrl+Enter)</div>
-            <button id="convert" style="display:block" title="Convert to MP4 in one click">
-                Render in Swivel
-            </button>
+
+            <div id="convertActions">
+                <button id="launch" class="secondary icon" title="Open Swivel App">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/>
+                        <path d="m21 3-9 9"/>
+                        <path d="M15 3h6v6"/>
+                    </svg>
+                </button>
+
+                <button id="convert" title="Convert to MP4 in one click">Render in Swivel</button>
+            </div>
         </div>
 
         <div id="actions">
-            <button id="send" class="secondary" title="Add SWF to Swivel input">Add to Swivel input</button>
+            <button id="send" class="secondary" title="Add SWF to Swivel input list">Add to Swivel input</button>
 
             <button id="grab" class="secondary icon" title="Save current frame as PNG (stage size)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

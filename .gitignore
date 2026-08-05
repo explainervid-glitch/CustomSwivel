@@ -14,3 +14,8 @@ Swivel.exe
 *.suo
 *.vcxproj.user
 Thumbs.db
+
+!/bin/install.bat
+!/bin/operator.ps1
+!/bin/uninstall.bat
+!/bin/uninstall.ps1

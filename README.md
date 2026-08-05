@@ -61,41 +61,24 @@ Using a different SDK version means updating the namespace in
 [application.xml](application.xml) to match `<descriptorNamespace>` in that SDK's
 `airsdk.xml`.
 
-## 4. Clone with submodules
+## 4. Clone
 
 ```
-git clone --recursive <repo url>
+git clone <repo url>
 ```
 
-Or, if already cloned:
+That is all — no `--recursive`, no submodule step.
 
-```
-git submodule update --init --recursive
-```
+`lib/format` holds the SWF reader and writer. Upstream it is a git submodule, which
+means a clone gets only a commit pointer and local fixes do not travel with it. Here
+it is vendored: the files are committed directly, so a plain clone builds.
 
-`lib/format` is a submodule holding the SWF reader and writer. Without it, nothing
-compiles.
-
-### Apply the gradient patch
-
-The submodule needs one fix that is **not** committed upstream. Without it, any SWF
-containing a gradient with more than 8 control points is rejected outright with
-`Gradient supports at most 8 control points`.
-
-```
-cd lib/format
-git apply ../../format-gradient-fix.patch
-cd ../..
-```
-
-Confirm it applied:
-
-```
-git -C lib/format diff --stat
-```
-
-Git submodules record only a commit pointer, so this patch does not travel with a
-clone. Re-apply it whenever the submodule is reset.
+That matters because the copy here carries a fix the upstream library does not.
+Without it, any SWF containing a gradient with more than 8 control points is rejected
+outright with `Gradient supports at most 8 control points`. The change is in
+[lib/format/format/swf/Writer.hx](lib/format/format/swf/Writer.hx); the original diff
+is kept as [format-gradient-fix.patch](format-gradient-fix.patch) for reference, but
+you do not need to apply it.
 
 ---
 

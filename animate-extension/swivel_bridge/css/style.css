@@ -43,7 +43,10 @@ html, body {
 #statusRow {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    /* Centred, not flex-start: the launch button is taller than the status
+       text, and top-aligning leaves dead space beneath the text whenever it
+       appears. */
+    align-items: center;
     gap: 8px;
     margin-bottom: 10px;
     padding-bottom: 8px;
@@ -101,10 +104,11 @@ html, body {
     color: #6a6a6a;
 }
 
+/* No bottom margin: #state supplies its own margin-top when revealed, so this
+   would only be dead space while the text is hidden. */
 #header {
     display: flex;
     align-items: center;
-    margin-bottom: 3px;
 }
 
 .dot {
@@ -113,13 +117,30 @@ html, body {
     border-radius: 50%;
     margin-right: 7px;
     flex: none;
+    position: relative;
+    cursor: pointer;
+}
+
+/* An 8px target is too small to hit reliably, so extend the clickable area
+   without affecting layout. */
+.dot::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
 }
 
 .dot.on   { background: #2892e9; }
 .dot.off  { background: #8a8a8a; }
 .dot.busy { background: #e0b040; }
 
+/* Hidden by default -- the dot already carries the status through colour.
+   Clicking the dot reveals the wording. */
 #state {
+    display: none;
+    margin-top: 3px;
     font-size: 11px;
     color: #b4b4b4;
     word-break: break-word;
@@ -148,10 +169,24 @@ html, body {
 
 #convertRow {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     align-items: center;
     gap: 8px;
     margin-bottom: 10px;
+}
+
+/* Render sits alongside the launch button, taking whatever width is left. */
+#convertActions {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 5px;
+    width: 100%;
+}
+
+#convertActions #convert {
+    flex: 1;
+    width: auto;
 }
 
 button {
@@ -188,27 +223,48 @@ button.secondary {
 
 button.secondary:hover:enabled { background: #585858; }
 
+/* Narrow, outlined, and sized to its icon -- a secondary action next to the
+   solid Render button. */
 #launch {
     width: auto;
     flex: none;
-    padding: 8px 10px;
+    padding: 0 10px;
     margin-bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 0;
-    align-self: center;
+    background: transparent;
+    border: 1px solid #5a5a5a;
+    color: #d8d8d8;
+}
+
+#launch:hover:enabled {
+    background: #3a3a3a;
+    border-color: #7a7a7a;
+}
+
+#launch:active:enabled {
+    background: #2a2a2a;
+    border-color: #5a5a5a;
+}
+
+#launch:disabled {
+    background: transparent;
+    border-color: #3a3a3a;
+    color: #6a6a6a;
 }
 
 #launch svg {
     display: block;
 }
 
+#statusText.expanded #state { display: block; }
+
 #state.ok  { color: #d8d8d8; }
 #state.err { color: #ef7a7a; }
 
 #progressWrap {
-    margin-top: auto;
     padding-top: 8px;
 }
 

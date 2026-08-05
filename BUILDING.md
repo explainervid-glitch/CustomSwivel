@@ -86,18 +86,22 @@ The correct value for your SDK is in `<AIR_SDK>/airsdk.xml`, under
 `-swf-version 27` in [Swivel.hxml](Swivel.hxml) is left alone — it controls
 bytecode features, not the runtime, and 27 still compiles fine.
 
-## 4. Submodule
+## 4. lib/format
 
-`lib/format` is a git submodule (a Swivel-specific fork of the Haxe `format`
-library) and is **not** included in a plain `git clone`. Without it, nothing
-compiles. It is pinned to the **`swf-button`** branch — see
-[.gitmodules](.gitmodules).
+`lib/format` is a Swivel-specific fork of the Haxe `format` library, holding the
+SWF reader and writer.
 
-```bash
-git submodule update --init --recursive
-```
+Upstream it is a **git submodule**, which means a plain clone gets only a commit
+pointer and any local fix has to be re-applied by hand. Here it is **vendored** —
+the files are committed directly to this repo — so a plain `git clone` is enough.
+No `--recursive`, no `git submodule update`.
 
-*(Already done in this working copy, at `2dfcd74` on `swf-button`.)*
+That matters because this copy carries a fix upstream does not: the SWF writer
+rejected gradients with more than 8 control points, which made real Animate
+exports fail with `Gradient supports at most 8 control points`. See
+[lib/format/format/swf/Writer.hx](lib/format/format/swf/Writer.hx). The original
+diff is kept as [format-gradient-fix.patch](format-gradient-fix.patch) for
+reference only.
 
 ---
 
