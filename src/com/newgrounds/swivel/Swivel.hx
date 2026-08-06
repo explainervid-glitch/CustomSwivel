@@ -299,6 +299,7 @@ class Swivel extends Application
 
 		initDragAndDrop();
 		initAnimateBridge();
+		initShutdownCleanup();
 				
 		// SOURCE
 		Binding.bind( removeButton.enabled, _controller.jobs.length > 0 );
@@ -707,11 +708,18 @@ class Swivel extends Application
 			// Not fatal -- Swivel simply will not accept pushes from Animate.
 			// Usually means another instance already owns the port.
 			_animateBridge = null;
-			return;
 		}
+	}
 
+	/**
+	 * Registered unconditionally, and separately from the bridge: a conversion
+	 * still in flight otherwise leaves ffmpeg running and holding ~900MB, with
+	 * nothing left to shut it down. Those accumulate across runs.
+	 */
+	private function initShutdownCleanup() : Void {
 		NativeApplication.nativeApplication.addEventListener(Event.EXITING, function(_) {
 			if(_animateBridge != null) _animateBridge.stop();
+			com.newgrounds.swivel.ffmpeg.FfmpegProcess.shutdownAll();
 		});
 	}
 
@@ -1240,6 +1248,17 @@ class Swivel extends Application
 	
 	private function qualitySecretHandler(e) {
 		if(e.controlKey) qualitySlider.maximum = 4;
+
+		// Shift+click the quality slider to have the next conversion write out
+		// the rewritten SWF for inspection. Hidden rather than a real control,
+		// since it only matters when diagnosing a playback stall.
+		if(e.shiftKey) {
+			_controller.dumpMutatedSwf = !_controller.dumpMutatedSwf;
+			_toast.show(_controller.dumpMutatedSwf
+				? "Debug: will write the rewritten SWF beside the source."
+				: "Debug: rewritten SWF dump off.");
+		}
+
 		untyped qualitySlider.mouseMoveHandler(null);
 	}
 	

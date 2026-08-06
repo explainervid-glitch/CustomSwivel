@@ -253,29 +253,58 @@ void CreateChildProcess()
  
 // Create the child process. 
     
-   bSuccess = CreateProcess(NULL, 
-	  (LPWSTR)(cmdLine.c_str()),     // command line 
-      NULL,          // process security attributes 
-      NULL,          // primary thread security attributes 
-      TRUE,          // handles are inherited 
-      0,             // creation flags 
-      NULL,          // use parent's environment 
-      NULL,          // use parent's current directory 
-      &siStartInfo,  // STARTUPINFO pointer 
-      &piProcInfo);  // receives PROCESS_INFORMATION 
-   
+   // Put ffmpeg in a job object that dies with us.
+   //
+   // Without this, killing redirecter leaves ffmpeg running: it is our child,
+   // not the caller's, so nothing propagates the termination. Swivel would
+   // then strand a ~900MB encoder on every cancelled or crashed conversion,
+   // and those accumulate until the machine runs out of memory.
+   //
+   // KILL_ON_JOB_CLOSE terminates the child whenever the last handle to the
+   // job closes -- which the OS does for us even if this process is killed
+   // outright or crashes.
+   HANDLE hJob = CreateJobObject(NULL, NULL);
+   if (hJob != NULL)
+   {
+      JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobLimits;
+      ZeroMemory(&jobLimits, sizeof(jobLimits));
+      jobLimits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+      SetInformationJobObject(hJob, JobObjectExtendedLimitInformation,
+                              &jobLimits, sizeof(jobLimits));
+   }
+
+   bSuccess = CreateProcess(NULL,
+	  (LPWSTR)(cmdLine.c_str()),     // command line
+      NULL,          // process security attributes
+      NULL,          // primary thread security attributes
+      TRUE,          // handles are inherited
+      CREATE_SUSPENDED, // start suspended so it can be assigned to the job first
+      NULL,          // use parent's environment
+      NULL,          // use parent's current directory
+      &siStartInfo,  // STARTUPINFO pointer
+      &piProcInfo);  // receives PROCESS_INFORMATION
+
    CloseHandle(g_hChildStd_ERR_Wr);
 
-   // If an error occurs, exit the application. 
-   if ( ! bSuccess ) 
+   // If an error occurs, exit the application.
+   if ( ! bSuccess )
       ErrorExit(TEXT("CreateProcess"));
-   else 
+   else
    {
+      // Assign before resuming, so the child can never run outside the job.
+      if (hJob != NULL)
+         AssignProcessToJobObject(hJob, piProcInfo.hProcess);
+
+      ResumeThread(piProcInfo.hThread);
+
       // Close handles to the child process and its primary thread.
       // Some applications might keep these handles to monitor the status
-      // of the child process, for example. 
+      // of the child process, for example.
 	   g_hProcess = piProcInfo.hProcess;
       CloseHandle(piProcInfo.hThread);
+
+      // Deliberately not closing hJob: the job must stay open for as long as
+      // this process lives, since closing it kills ffmpeg.
    }
 }
  

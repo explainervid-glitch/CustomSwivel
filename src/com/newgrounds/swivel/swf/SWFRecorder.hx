@@ -203,6 +203,33 @@ class SWFRecorder {
 		recording = true;
 	}
 
+	/**
+	 * Slows the stage while the encoder is behind, instead of suspending the
+	 * whole runtime.
+	 *
+	 * The SWF plays freely and Swivel captures whatever it renders, so playback
+	 * has to be held back when ffmpeg cannot keep up or frames are lost. That
+	 * used to be done with System.pause(), which suspends everything -- and
+	 * because pause() only takes effect once the script yields, the very event
+	 * meant to resume it could arrive first and be consumed, leaving the
+	 * runtime suspended for good with no crash and no way back.
+	 *
+	 * Lowering the frame rate achieves the same backpressure without ever
+	 * suspending: events keep flowing, timers keep running, and the SWF simply
+	 * advances more slowly. No frame is skipped, so capture stays exact.
+	 */
+	inline private static var THROTTLED_FRAME_RATE : Float = 15;
+
+	private var _throttled : Bool = false;
+
+	public function throttle(on : Bool) : Void {
+		if(_throttled == on || _window == null || _swf == null) return;
+		_throttled = on;
+
+		try _window.stage.frameRate = on ? THROTTLED_FRAME_RATE : _swf.frameRate
+		catch(error : Dynamic) {}
+	}
+
 	public function stop() : Void {
 		recording = false;
 				

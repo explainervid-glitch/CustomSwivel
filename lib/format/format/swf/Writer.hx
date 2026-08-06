@@ -871,8 +871,13 @@ class Writer {
 
 	function writeMorphGradients(ver: Int, gradients: Array<MorphGradient>) {
 		var num = gradients.length;
-		if(num < 1 || num > 8)
-			throw "Number of specified morph gradients ("+num+") must be in range 1..8";
+		var max = (ver >= 2) ? 15 : 8;
+		if(num < 1 || num > max)
+			throw "Number of specified morph gradients ("+num+") must be in range 1.."+max;
+
+		// The reader consumes a count byte before the records, so it has to be
+		// written back or every following byte in the shape is misaligned.
+		o.writeByte(num);
 
 		for(grad in gradients) {
 			writeMorphGradient(ver, grad);
@@ -893,7 +898,7 @@ class Writer {
 				writeMorphGradients(ver, gradients);
 
 			case MFSRadialGradient(startMatrix, endMatrix, gradients):
-				o.writeByte(FillStyleTypeId.LinearGradient);
+				o.writeByte(FillStyleTypeId.RadialGradient);
 				writeMatrix(startMatrix);
 				writeMatrix(endMatrix);
 				writeMorphGradients(ver, gradients);

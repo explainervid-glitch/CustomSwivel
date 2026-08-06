@@ -63,6 +63,34 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 	public var skipInitialFrames : Int = 0;
 	private var _framesToSkip : Int = 0;
 
+	/**
+	 * Writes the rewritten SWF beside the source as <name>.swivel-debug.swf.
+	 *
+	 * Swivel never plays your file directly: it injects tracking code and
+	 * writes a new SWF, and it is that copy the Flash runtime plays. When
+	 * playback stalls on a particular frame, the question is whether the
+	 * rewritten file is malformed or the capture loop is at fault -- and the
+	 * only way to tell is to open the copy in a player and see if it stalls
+	 * there too.
+	 */
+	public var dumpMutatedSwf : Bool = false;
+
+	private function writeMutatedSwf(job : SwivelJob) : Void {
+		try {
+			var target = job.file.parent.resolvePath(job.file.name + ".swivel-debug.swf");
+			var bytes = job.swf.getBytes();
+
+			var stream = new FileStream();
+			stream.open(target, FileMode.WRITE);
+			stream.writeBytes(bytes.getData());
+			stream.close();
+
+			Logger.log("SwivelLog", 'Wrote rewritten SWF to ${target.nativePath}\n');
+		} catch(error : Dynamic) {
+			Logger.log("SwivelLog", 'Could not write the rewritten SWF: ${Std.string(error)}\n');
+		}
+	}
+
 	public var stereoAudio : Bool = true;
 	public var audioSource : AudioSource;
 	
@@ -202,6 +230,9 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 			case StartEncoder(outputFile, inputAudioFile):
 				var ffmpeg = new FfmpegEncoder(videoPreset, videoBitRate, outputFile, _recorder.outputWidth, _recorder.outputHeight, jobs.array[0].swf.frameRate, if(inputAudioFile != null) inputAudioFile.nativePath else null, audioCodec, audioBitRate, if(stereoAudio) 2 else 1);
 				ffmpeg.onComplete.add(onEncodingComplete);
+				// Backpressure: slow playback while the encoder is behind,
+				// rather than suspending the runtime.
+				ffmpeg.onThrottle = _recorder.throttle;
 				_ffmpeg = ffmpeg;
 				runNextTask();
 				
@@ -232,6 +263,9 @@ class SwivelController extends com.huey.binding.Binding.Bindable implements Cont
 				}
 				_swfMutators.add( new SilenceSoundMutator() );
 				for (mutator in _swfMutators) mutator.mutate(job.swf);
+
+				if(dumpMutatedSwf) writeMutatedSwf(job);
+
 				runNextTask();
 
 			case EncodeSwf(job):

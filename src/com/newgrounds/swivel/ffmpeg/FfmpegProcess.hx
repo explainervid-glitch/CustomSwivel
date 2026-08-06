@@ -33,7 +33,50 @@ import flash.utils.ByteArray;
 class FfmpegProcess
 {
 	public var onComplete(default, null) : Dispatcher<Dynamic>;
-	
+
+	/**
+	 * Every encoder started but not yet finished.
+	 *
+	 * Swivel spawns redirecter.exe, which in turn spawns ffmpeg. Killing
+	 * redirecter does not necessarily take ffmpeg with it, so a cancelled or
+	 * crashed conversion can strand a ~900MB encoder. Those accumulate across
+	 * runs until the machine runs out of memory.
+	 */
+	private static var _live : Array<FfmpegProcess> = [];
+
+	/** Force-closes every running encoder. Call before the app exits. */
+	public static function shutdownAll() : Void {
+		for(process in _live.copy()) {
+			try process.close(true) catch(error : Dynamic) {}
+		}
+		_live = [];
+
+		killStrayEncoders();
+	}
+
+	/**
+	 * Backstop for builds whose redirecter.exe predates the job-object fix:
+	 * kills the whole redirecter process tree, ffmpeg included.
+	 *
+	 * redirecter.exe ships with Swivel and is used by nothing else, so this
+	 * cannot take out an unrelated encode.
+	 */
+	private static function killStrayEncoders() : Void {
+		if(flash.system.Capabilities.os.split(" ")[0] != "Windows") return;
+
+		try {
+			var taskkill = new File("C:\\Windows\\System32\\taskkill.exe");
+			if(!taskkill.exists) return;
+
+			var startupInfo = new NativeProcessStartupInfo();
+			startupInfo.executable = taskkill;
+			startupInfo.arguments = flash.Vector.ofArray(["/F", "/T", "/IM", "redirecter.exe"]);
+			new NativeProcess().start(startupInfo);
+		} catch(error : Dynamic) {
+			Logger.log("FfmpegLog", 'Could not sweep stray encoders: ${Std.string(error)}\n');
+		}
+	}
+
 	private static var _ffmpegFolder : File;
 	
 	private var _closed : Bool;
@@ -73,6 +116,8 @@ class FfmpegProcess
 		_ffmpeg.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA, onStdOutData);
 		_ffmpeg.addEventListener(NativeProcessExitEvent.EXIT, onFfmpegExit);
 		_ffmpeg.start(startupInfo);
+
+		_live.push(this);
 	}
 	
 	private function getFfmpegExecutable() : File {
@@ -123,6 +168,7 @@ class FfmpegProcess
 	}
 	
 	private function onFfmpegExit(e) : Void {
+		_live.remove(this);
 		flash.system.System.resume();
 		onComplete.dispatch(e.exitCode);
 	}
@@ -274,15 +320,29 @@ class FfmpegEncoder extends FfmpegProcess
 		}
 
 		if(_frameQueue.length == 1) sendNextFrame();
-		if(_frameQueue.length >= FRAME_QUEUE_SIZE) flash.system.System.pause();
+		updateThrottle();
 	}
 	
 	private function sendNextFrame() {
 		if(_frameQueue.length > 0) {
 			super.send(_frameQueue[0]);
 		}
-		
-		if(_frameQueue.length < FRAME_QUEUE_SIZE) flash.system.System.resume();
+
+		updateThrottle();
+	}
+
+	/**
+	 * Tells the recorder to slow down while the queue is full, and to run at
+	 * full speed once it drains.
+	 *
+	 * This replaces System.pause()/resume(). Suspending the runtime deadlocked
+	 * whenever the resuming event landed between the pause() call and the
+	 * script yielding, which is what stalled conversions on heavy frames.
+	 */
+	public var onThrottle : Bool -> Void;
+
+	private function updateThrottle() : Void {
+		if(onThrottle != null) onThrottle(_frameQueue.length >= FRAME_QUEUE_SIZE);
 	}
 	
 	public override function close(?force : Bool = false) : Void {
@@ -322,6 +382,11 @@ class FfmpegEncoder extends FfmpegProcess
 	}
 		
 	private override function onStderr(_) : Void {
+		// Any traffic from the encoder means it is alive, so lift the pause.
+		// See the note on unpause() -- ffmpeg reports progress constantly, so
+		// this is the handler most likely to rescue a stuck runtime.
+		unpause();
+
 		var output : String = _ffmpeg.standardError.readUTFBytes(_ffmpeg.standardError.bytesAvailable);
 		Logger.log("FfmpegLog", output);
 						
@@ -332,6 +397,8 @@ class FfmpegEncoder extends FfmpegProcess
 	}
 	
 	private override function onStdinError(event) : Void {
+		unpause();
+
 		Logger.log("FfmpegLog", Std.string(event));
 		event.preventDefault();
 		
@@ -342,6 +409,8 @@ class FfmpegEncoder extends FfmpegProcess
 	}
 	
 	private override function onStdinProgress(_) : Void {
+		unpause();
+
 		_framesReceived++;
 		//trace("Prcvd: " + _framesReceived);
 		if (_closed && _framesReceived >= _framesSent) closeInputOnce();
@@ -349,6 +418,26 @@ class FfmpegEncoder extends FfmpegProcess
 	}
 	
 	private override function onStdOutData(_) : Void {
+		unpause();
+
 		if(_isWindows) { _frameQueue.shift(); sendNextFrame(); }
+	}
+
+	/**
+	 * Lifts the runtime pause that send() applies when the frame queue fills.
+	 *
+	 * send() pauses the entire runtime as backpressure -- the SWF plays in real
+	 * time while ffmpeg encodes more slowly, so without it frames are lost.
+	 * The danger is that resuming depended on one specific event arriving. If
+	 * that event was already queued when pause() ran, or the encoder went quiet
+	 * for a moment, nothing ever lifted the pause: the window stops redrawing,
+	 * Windows removes it as unresponsive, and the process sits there paused
+	 * with no crash logged.
+	 *
+	 * Resuming on *any* encoder event removes that dependency. send() simply
+	 * pauses again on the next frame if the queue is still full.
+	 */
+	private function unpause() : Void {
+		flash.system.System.resume();
 	}
 }

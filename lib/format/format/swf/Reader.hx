@@ -687,8 +687,10 @@ class Reader {
 
 	function readMorphGradients(ver: Int) {
 		var num = i.readByte();
-		if(num < 1 || num > 8)
-			throw "Invalid number of morph gradients ("+num+"). Should be in range 1..8!";
+		// DefineMorphShape allows 8 control points, DefineMorphShape2 allows 15.
+		var max = (ver >= 2) ? 15 : 8;
+		if(num < 1 || num > max)
+			throw "Invalid number of morph gradients ("+num+"). Should be in range 1.."+max+"!";
 
 		var grads = new Array<MorphGradient>();
 		for(i in 0...num) {
