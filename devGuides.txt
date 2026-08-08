@@ -2,10 +2,13 @@ link plugin file:
 mklink /D "C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\swivel_animate_bridge" "C:\01 Development\theNewSwivel\Swivel\animate-extension\swivel_bridge"
 
 Build and Run:
+
+haxe Swivel.hxml; if ($?) { & "C:\01 Development\AIRSDK\AIRSDK_32.0\bin\adl.exe" application.xml . }
 haxe Swivel.hxml; if ($?) { & "C:\01 Development\AIRSDK\AIRSDK_33.1.1\bin\adl64.exe" application.xml . }
 
-Install Portable (CMD):
-PackageApp.bat
+Install Portable (PS):
+$env:AIR_SDK = "C:\01 Development\AIRSDK\AIRSDK_32.0"
+.\PackageApp.bat
 
 Install Exe: 
 makensis win-installer.nsi

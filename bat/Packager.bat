@@ -8,7 +8,11 @@ set OUTPUT=%AIR_PATH%\%AIR_NAME%%AIR_TARGET%.air
 :: Package
 echo.
 echo Packaging %AIR_NAME%%AIR_TARGET%.air using certificate %CERT_FILE%...
-call adt -package -storetype pkcs12 -keystore bat/Swivel.p12 -storepass %CERT_PASS% -target bundle bin/Swivel application.xml bin/Swivel.swf ffmpeg/win32 ffmpeg/licenses assets/icons README.md LICENSE.md
+:: -tsa none: the timestamp authority AIR 32 defaults to is long dead and the
+:: signing fails with "Could not generate timestamp: Connection reset".
+:: Timestamping only keeps a signature valid past certificate expiry, which is
+:: meaningless for the self-signed cert from CreateCertificate.bat.
+call adt -package -storetype pkcs12 -keystore bat/Swivel.p12 -storepass %CERT_PASS% -tsa none -target bundle bin/Swivel application.xml bin/Swivel.swf ffmpeg/win32 ffmpeg/licenses assets/icons README.md LICENSE.md
 if errorlevel 1 goto failed
 goto end
 

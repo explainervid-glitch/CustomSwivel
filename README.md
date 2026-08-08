@@ -43,23 +43,29 @@ haxelib setup
 Without a config file, different shells guess different repository locations, and
 you get `Library air is not installed` in one terminal while another builds fine.
 
-## 3. AIR SDK from HARMAN
+## 3. AIR SDK 32.0
 
-<https://airsdk.harman.com/download>
+This fork targets **Adobe AIR 32.0**, the final release before HARMAN took over at
+AIR 33. That is a deliberate choice for one reason: **AIR 32 displays no HARMAN
+splash screen**. Every later runtime shows one unless you hold a paid HARMAN
+licence.
 
-Requires a free account. The free tier covers revenue under $50k/year. Take the
-**SDK**, not the end-user runtime. This fork is built against **33.1.1**. Unzip it,
-then point `AIR_SDK` at the folder that directly contains `bin/`:
+Adobe no longer distributes it, so the 32.0 SDK takes some hunting to find.
+
+Unzip it, then point `AIR_SDK` at the folder that directly contains `bin/`:
 
 ```
-setx AIR_SDK "C:\path\to\AIRSDK_33.1.1"
+setx AIR_SDK "C:\path\to\AIRSDK_32.0"
 ```
 
 Open a new terminal afterwards.
 
-Using a different SDK version means updating the namespace in
-[application.xml](application.xml) to match `<descriptorNamespace>` in that SDK's
-`airsdk.xml`.
+**Newer SDKs also work.** This tree is verified on HARMAN
+[51.3.3](https://airsdk.harman.com/download) (free account, free under $50k/year
+revenue — take the **SDK**, not the end-user runtime). You trade the splash screen
+for a supported, 64-bit runtime. Switching versions means two changes: update the
+namespace in [application.xml](application.xml) to match `<descriptorNamespace>` in
+that SDK's `airsdk.xml`, and use `adl64.exe` in place of `adl.exe` below.
 
 ## 4. Clone
 
@@ -73,12 +79,27 @@ That is all — no `--recursive`, no submodule step.
 means a clone gets only a commit pointer and local fixes do not travel with it. Here
 it is vendored: the files are committed directly, so a plain clone builds.
 
-That matters because the copy here carries a fix the upstream library does not.
-Without it, any SWF containing a gradient with more than 8 control points is rejected
-outright with `Gradient supports at most 8 control points`. The change is in
-[lib/format/format/swf/Writer.hx](lib/format/format/swf/Writer.hx); the original diff
-is kept as [format-gradient-fix.patch](format-gradient-fix.patch) for reference, but
-you do not need to apply it.
+That matters because the copy here carries fixes the upstream library does not. All
+of them are in [Reader.hx](lib/format/format/swf/Reader.hx) and
+[Writer.hx](lib/format/format/swf/Writer.hx):
+
+- **Morph gradient count byte.** The reader consumed a count byte before the gradient
+  records; the writer never wrote it back. Every `DefineMorphShape` carrying a
+  gradient fill came out exactly one byte short, so all following edge records were
+  read misaligned. AIR did not error on the corrupt geometry — it stalled silently,
+  forever, on the frame where such a shape was placed. In practice that meant **any
+  shape tween animating a gradient hung the conversion**.
+- **Radial morph gradients** were written with a `LinearGradient` fill style type.
+- **Control point limits** ignored the shape version. `DefineShape4` and
+  `DefineMorphShape2` permit 15 control points, not 8; without this, affected files
+  are rejected with `Gradient supports at most 8 control points`.
+
+[format-gradient-fix.patch](format-gradient-fix.patch) holds the original
+control-point diff for reference only. Everything is already applied.
+
+Still unfixed: focal radial gradients. The reader accepts the fill style then throws,
+and never reads the focal point field. Supporting them needs a new variant in
+`Data.hx`.
 
 ---
 
@@ -95,16 +116,17 @@ Produces `bin/Swivel.swf`.
 ## Run
 
 ```
-& "$env:AIR_SDK\bin\adl64.exe" application.xml .
+& "$env:AIR_SDK\bin\adl.exe" application.xml .
 ```
 
-Use `adl64`, not `adl` — the 32-bit launcher is capped near 2 GB, which matters
-when capturing large frames.
+AIR 32 is 32-bit only and ships `adl.exe` alone. That caps the process near 2 GB —
+ample at 1080p, but a real ceiling if you push to 4K. On a HARMAN SDK use
+`adl64.exe`, which has no such limit.
 
 Build and run together:
 
 ```
-haxe Swivel.hxml; if ($?) { & "$env:AIR_SDK\bin\adl64.exe" application.xml . }
+haxe Swivel.hxml; if ($?) { & "$env:AIR_SDK\bin\adl.exe" application.xml . }
 ```
 
 PowerShell has no `&&`, hence `; if ($?) { }`.
@@ -118,9 +140,28 @@ PackageApp.bat
 Produces a self-contained bundle in `bin/Swivel/` with a captive AIR runtime and
 ffmpeg, so end users install nothing.
 
-It also writes an empty `META-INF/AIR/debug` marker. **This is required.** Frame
-throttling uses `System.pause()`, which only works in a debug build; package by hand
-without that marker and conversions drop frames.
+**The bundled runtime comes from whichever SDK `AIR_SDK` points at, not from the
+namespace in `application.xml`.** `-target bundle` copies a captive runtime out of
+the packaging SDK, so packaging with a HARMAN SDK puts the splash screen back even
+though `adl` from AIR 32 showed none during development. Verify what actually
+shipped:
+
+```
+(Get-Item "bin\Swivel\Adobe AIR\Versions\1.0\Adobe AIR.dll").VersionInfo.ProductVersion
+```
+
+Since `AIR_SDK` is an ambient environment variable, this drifts silently between
+terminals. If packaging matters, pin it.
+
+`Packager.bat` passes `-tsa none`. The timestamp authority AIR 32 defaults to is
+long dead and signing otherwise fails with `Could not generate timestamp: Connection
+reset`. Timestamping only preserves a signature past certificate expiry, which is
+meaningless for the self-signed certificate from `CreateCertificate.bat`.
+
+`PackageApp.bat` also writes an empty `META-INF/AIR/debug` marker. This is no longer
+load-bearing — throttling used to rely on `System.pause()`, which needs a debug
+build, but that was replaced with a frame-rate throttle. The marker is harmless and
+still written.
 
 ## Install
 
@@ -151,8 +192,14 @@ recreates that folder on every run.
 
 # What this fork changes
 
-**Toolchain** — builds on Haxe 4 and HARMAN AIR, plus the `externs/` patch above and
-a gradient-validation fix in the SWF writer.
+**Toolchain** — builds on Haxe 4 and AIR 32 (or any HARMAN SDK), plus the `externs/`
+patch above and the SWF reader/writer fixes described earlier — the morph gradient
+one is what stopped conversions hanging on shape tweens.
+
+**Reliability** — orphaned `ffmpeg`/`redirecter` processes are killed on shutdown
+instead of accumulating at roughly 900 MB each, and backpressure is applied by
+throttling the capture window's frame rate rather than suspending the whole runtime
+with `System.pause()`.
 
 **Workflow** — multi-file import, drag and drop, visible errors instead of silent
 failure, remembered folders, a queue mode that converts each SWF to its own video
@@ -193,8 +240,10 @@ python tools/check-fonts.py
 Swivel is licensed under the GNU GPLv3.
 See [LICENSE.md](LICENSE.md) for the full license.
 
-Swivel runs using the [Harman AIR](https://airsdk.harman.com/) runtime. AIR is
-owned by Adobe Systems, Inc.
+Swivel bundles a captive Adobe AIR runtime — 32.0 by default, or a
+[HARMAN](https://airsdk.harman.com/) build if you package with one of their SDKs.
+AIR is owned by Adobe Systems, Inc.; releases from 33 onward are distributed by
+HARMAN.
 
 Swivel uses software from the [FFmpeg](https://ffmpeg.org/) project along
 with supporting libraries, licensed under their corresponding licenses. These
